@@ -1,0 +1,637 @@
+---
+title: "TP Projet AC04" 
+author: "Marius Soltane"
+date: "Mars 2024"
+institute: "GI UTC"
+lang: fr
+output:
+  html_document:
+   toc: true
+   #fig-format: svg
+   toc-location: left
+   cap-location: margin
+   code-fold: false
+   highlight-style: github
+   code-copy: true
+   html-math-method: katex
+   number-sections: true
+   code-line-numbers: false
+   include-after-body:
+        text: |
+          <script>
+          const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+          for (var i=0; i<noterefs.length; i++) {
+            const ref = noterefs[i];
+            ref.onclick = function(){ref._tippy.show();return false;};
+          }
+          </script>
+   embed-resources: true
+   self-contained-math: true
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Préalable {.unnumbered}
+
+## Objectif et déroulé du projet {.unnumbered}
+
+L'objectif de ce projet est de vous présenter, dans sa version la plus
+simple, le modèle stochastique appelé **régression linéaire** qui est
+une des modélisations les plus répandues ; ce modèle permet d'analyser
+la relation, que l'on suppose **linéaire**, d'une variable par rapport à
+une autre.
+
+La première section du sujet présente le modèle de régression linéaire
+simple sans qu'aucune question ne soit posée. La seconde et troisième
+parties visent à vous faire manipuler les résultats théoriques du modèle
+de régression linéaire sur des données simulées. La dernière partie
+consiste à traiter un jeu de données réelles et à discuter de la
+pertinence du choix de ce modèle de regression linéaire pour la
+modélisation de la relation entre les deux variables considérées.
+
+## Instructions à suivre {.unnumbered}
+
+1.  **Constitution des groupes.** Vous devez constituer des groupes de
+    3-4\
+    étudiants avec les contraintes suivantes :
+
+    -   les groupes sont à former au sein d'un même TP (6 groupes pour
+        T1 et 6 groupes pour T2)
+    -   pour le groupe T1 : 5 groupes de 4 et 1 groupe de 3 avec au
+        moins 1 IM par groupe
+    -   pour le groupe T2 : 3 groupes de 4 et 3 groupes de 3 avec au
+        plus 1 IM par groupe
+
+    Si la composition des groupes n'est pas conforme aux consignes
+    formulées ci-dessus, le responsable d'UV se chargera de modifier la
+    composition des groupes.
+
+2.  **Déclaration d'un groupe** Un membre de chaque groupe devra envoyer
+    un mail au responsable d'UV pour déclarer l'ensemble des membres de
+    son groupe. Il veillera à mette en copie du mail l'ensemble des
+    membres de son groupe. La date limite pour déclarer un groupe est
+    fixée au **vendredi 29 mars 2024.**
+
+3.  **Format du rapport.** Le rapport sera rédigé sous la forme d'un
+    fichier [_RMarkdown_](https://rmarkdown.rstudio.com/articles_intro.html)
+    ou [_quarto_](https://quarto.org/) (l'extension de votre fichier doit
+    être `.rmd` ou `.qmd` selon le type de fichier); un fichier `.rmd`
+    ou `.qmd` est créé à partir du logiciel RStudio. Ce type de fichier
+    permet d'inclure à la fois des lignes de code R et du texte. Vous
+    pourrez vous aider du fichier source disponible sur la page du cours
+    (`Projet_TP_Regression_lin_Etu.rmd` pour la version RMarkdown ou
+    `Projet_TP_Regression_lin_Etu.qmd` pour la verison quarto).
+
+4.  **Rédaction du rapport.** Vous devez rédiger votre rapport en
+    conservant la numérotation de ce document; par exemple les réponses
+    aux questions (Q1a), (Q1b),... devront être rédigées dans la
+    section II. de votre rendu de rapport. Par ailleurs, il vous est
+    demandé de faire apparaître dans le fichier compilé `.html` les
+    résultats numériques attendus et les figures tracées.
+
+5.  **Rendu du rapport et nom du rapport.** Vous déposerez sur moodle
+    votre rapport sous les formats `.rmd` ou `.qmd` et `.html`. Votre
+    nommerez votre rapport
+    `Rapport_P24_AC04_NOM_ETUDIANT_premier_dans_la_liste_alphabétique_du_groupe`
+
+6.  **Date limite.** Vous devrez impérativement déposer votre rapport
+    sur le moodle pour le **vendredi 6 juin 2024 à 23h (heure de Paris)** 
+    au plus tard (au delà de cette date et heure, le moodle n'acceptera pas votre rapport) ; 
+    le non-envoi du rapport implique un zéro à la note d'évaluation de TP pour
+    l'ensemble des étudiants du groupe en question.
+
+7.  **Notation du rapport** Dans la note attribuée à chaque projet
+    rendu, seront pris en compte entre autres, la faisabilité de la
+    compilation du ficher `.rmd`/`.qmd` et le respect des consignes (rédaction,
+    format, utilisation d'une fonction particulière sous R,...). Le travail fourni dans le 
+    cadre de se projet doit être un travail original. 
+    Tout plagiat ou utilisation des modèles d'IA générative (Large Language Models comme 
+    ChatGPT) est donc, par conséquence, strictement interdit. 
+    Tout manquement sera apprécié au titre de la fraude et fera l'objet 
+    de poursuites conformément au règlement des études.
+
+8.  **Evaluation du TP** Les soutenances orales se dérouleront le sur la
+    semaine avant les finaux. Les créneaux dédiés aux soutenances ainsi
+    que les modalités seront communiqués ultérieurement
+
+L'évaluation du projet de TP tiendra compte du rapport et de la
+prestation orale.
+
+-   [(Q0)]{style="color:red"} Indiquer les noms de membres du groupe
+    ainsi que les pourcentages de la contribution de chacun dans le
+    rendu final de ce projet.
+    -   Alexandre BIDAUX (GI), contribution : - %
+    -   Julie CHARTIER (GI), contribution : - %
+    -   Chloé LEZAIRE (IM), contribution : - %
+    -   Valentin TESSIER-NAJBOR (IM), contribution : - %
+
+# Modèle de régression linéaire simple Gaussien et estimation des paramètres
+
+## Modèle (cf Section 7.2, poly CM)
+
+Supposons que l'on dispose de $n$ couples $(x_1,Y_1),\ldots, (x_n,Y_n)$,
+avec $x_i\in \mathbb{R}$ et $Y_i$ une v.a. réelle de réalisation $y_i.$
+Nous commençons d'abord par une étape de pré-modélisation : la
+représentation graphique des données qui est un préalable indispensable
+à la mise en oeuvre de n'importe quelle méthode statistique pour le
+traitement des données. Si, à partir de la représentation graphique des
+$(x_i,y_i)_i$, il semble que les $(x_i)_i$
+[expliquent]{style="color:blue"} la majeure partie de la *variabilité*
+des $(Y_i)_i$ et que le lien entre les $Y_i$ et les $x_i$ est une
+relation linéaire, cela pourrait revenir à supposer que
+$\mathbb{E}(Y_i)= a +bx_i$ pour tout $i=1,\ldots,n$. Supposer que
+$\mathbb{E}(Y_i)= a +bx_i$ pour tout $i=1,\ldots,n$ revient alors à
+considérer le plus simple des **modèles de régression** à savoir, le
+modèle de régression linéaire,
+
+\begin{align}
+Y_i  =  a + b x_i + \epsilon_i, \; \text{avec} \; \mathbb{E}(\epsilon_i)=0, \; \forall i=1,\ldots,n,    \quad (1) \end{align}
+<span style="color:green"> où les $(\epsilon_i)_i$ sont appelés les
+"erreurs" ou "bruits" du modèle<span style="color:green">.
+
+Sur le modèle (1), nous formulons les hypothèses suivantes
+[$(\mathcal{ H})$ :]{style="color:green"}
+
+1.  [Indépendance des erreurs
+    $\epsilon_1,\ldots,\epsilon_n$]{style="color:green"}
+
+2.  [Normalité des erreurs
+    $\epsilon_1,\ldots,\epsilon_n$]{style="color:green"}
+
+3.  [Homoscédasticité, c-à-d, les erreurs ont toutes la même variance,
+    soit
+    $\text{Var}(\epsilon_1)=\text{Var}(\epsilon_2)=\ldots=\text{Var}(\epsilon_n)$
+    et on note $\sigma^2$ leur variance commune.]{style="color:green"}
+
+On considère ainsi le modèle suivant : \begin{align} 
+Y_i  =  a + b x_i + \epsilon_i,   \ \text{pour tout} \ i =1,\ldots,n, \ \text{avec} \quad &
+\epsilon_1,\ldots,\epsilon_n \stackrel{iid}{\sim} \epsilon \  \text{ où } \; \epsilon \sim \mathcal{ N}(0,\sigma^2). \quad \quad \quad  (2) \end{align}
+Ce modèle peut se réecrire de façon plus ergonomique via la forme
+suivante : pour tout
+$i=1,\ldots,n, \quad Y_i \sim \mathcal{ N}(a + b x_i,\sigma^2)$
+
+Notons que :
+
+-   la droite $y=a+bx\stackrel{Déf.}{:}$ [droite de régression de $Y$ en
+    $x$ avec $a$ l'intercept (la valeur de la droite à l'origine) et $b$
+    la pente]{style="color:green"}
+
+-   **les paramètres du modèle sont**: $a,\;b$ réels et
+    $\sigma^2>0$
+
+Une fois que le modèle posé, [il s'agit d'estimer les paramètres du
+modèles, puis de valider le modèle retenu et enfin de faire de la
+prédiction de la valeur de $Y$ sur une valeur de $x$ non encore
+observée.]{style="color:blue"}
+
+## Estimation (cf Section 7.3, poly CM)
+
+1.  Méthode du maximum de vraisemblance
+
+-   Sous $(\mathcal{H})$, la log-vraisemblance du modèle est :
+
+$$\ell (a,b,\sigma^2;y_1,\ldots,y_n)=-\frac{n}{2} \log (2\pi \sigma^2) - \frac{1}{2 \sigma^2}\displaystyle{\sum_{i=1}^n} (y_i-a-bx_i)^2$$
+
+-   Les EMV ${\hat a}, \hat{b}, {\hat\sigma_{MV}^2}$ sont solutions du
+    système d'équations de vraisemblance
+    $$\!\!\!\!\!\left\{\begin{array}{l} 
+    \frac{\partial}{\partial a} \ell(a,b,\sigma^2;y_1,\ldots,y_n) =0 \\
+    \frac{\partial}{\partial b} \ell (a,b,\sigma^2;y_1,\ldots,y_n) =0 \\
+    \frac{\partial}{\partial \sigma^2} \ell (a,b,\sigma^2;y_1,\ldots,y_n)=0 
+    \end{array} \right. \!\!\! \Leftrightarrow \!\! \left\{\begin{array}{l} {\hat a} = {\bar Y} - \displaystyle{\frac{S_{xY}}{s_x^2}{\bar x}}= {\bar Y}- {\hat b} {\bar x}\\
+    {\hat b}  = \displaystyle{\frac{S_{xY}}{s_x^2}} \\
+     {\hat\sigma_{MV}^2}  =\displaystyle{ \frac{1}{n}\sum_{i=1}^n (Y_i - {\hat a} - {\hat b}x_i)^2} \end{array}\right.,$$
+    avec $$\!\!\!\!\!\left\{ \begin{array}{ll} 
+    {\bar Y}=\displaystyle{\frac{1}{n}\sum_{i=1}^n Y_i},& S_{xY}= \displaystyle{\frac{1}{n}\sum_{i=1}^n (Y_i -{\bar Y})(x_i -{\bar x})= (\frac{1}{n}\sum_{i=1}^n x_iY_i) - {\bar x}{\bar Y}} \\
+    {\bar y}=\displaystyle{\frac{1}{n}\sum_{i=1}^n y_i},& s_{xy}= \displaystyle{\frac{1}{n}\sum_{i=1}^n (y_i -{\bar y})(x_i -{\bar x})= (\frac{1}{n}\sum_{i=1}^n x_iy_i) - {\bar x}{\bar y}} \\
+    {\bar x}=\displaystyle{\frac{1}{n}\sum_{i=1}^n x_i},  & 
+    s_x^2 =\displaystyle{\frac{1}{n}\sum_{i=1}^n (x_i-{\bar x})^2}=\displaystyle{(\frac{1}{n}\sum_{i=1}^n x_i^2) - {\bar x}^2} 
+    \end{array}\right.$$
+
+-   $y={\hat a} + {\hat b} x \stackrel{Déf.}{:}$ [droite des moindres
+    carrés de $Y$ en $x$]{style="color:green"}
+
+-   ${\hat a}$ et ${\hat b} \stackrel{Déf.}{:}$ [estimateurs des
+    moindres carrés]{style="color:green"}
+
+-   [Notations.]{style="color:blue"} Pour tout $i =1,\dots,n$,
+    ${\hat Y}_i = {\hat a} + {\hat b} x_i$ et
+    ${\hat \epsilon}_i=Y_i -{\hat Y}_i$
+
+-   $\hookrightarrow \; ({\hat \epsilon}_i)_{1 \leq i\leq n}\stackrel{Déf.}{:}$
+    [résidus]{style="color:green"}
+
+-   $\hookrightarrow \; {\hat Y_i}$ est un estimateur de
+    $\mathbb{E}(Y_i)$
+
+-   **Propriété des résidus**
+
+    $${\bar y}={\hat a} + {\hat b} {\bar x}\; \;\Rightarrow  \; \;\displaystyle{\sum_{i=1}^n {\hat y}_i = \sum_{i=1}^n y_i} \; \;\; \;  \Rightarrow\; \;\; \;  \displaystyle{\sum_{i=1}^n {\hat \epsilon}_i= \sum_{i=1}^n (y_i -{\hat y}_i)=0}$$
+
+## Propriétés des estimateurs et I.C. (cf Section 7.4 et 7.5, poly CM)
+
+-   ${\hat a}$ et ${\hat b}$ sont des **estimateurs sans biais** de $a$
+    et $b$ ;
+
+-   ${\hat \sigma}^2$ estimateur sans biais de $\sigma^2$ :
+
+$${\hat \sigma}^2=\displaystyle{\frac{n}{n-2}}\;  {\hat\sigma_{MV}^2}= \; \displaystyle{ \frac{1}{n-2}\sum_{i=1}^n (Y_i - {\hat a} - {\hat b}x_i)^2};$$
+
+-   **Loi exacte de** ${\hat a}$, ${\hat b}$, ${\hat \sigma}^2$ :
+    $${\hat a}\sim {\cal N}(a,\frac{\sigma^2}{n} (1+\frac{{\bar x}^2}{s_x^2})),   \quad {\hat b} \sim {\cal N}(b,\frac{\sigma^2}{ns_x^2}),  \quad  (n-2)\frac{{\hat \sigma}^2}{\sigma^2} \sim \chi^2_{n-2};$$
+
+-   ${\rm Cov}({\hat a}, {\hat b})=-\displaystyle{\frac{{\bar x}\sigma^2}{ns_x^2}}$
+    ;
+
+-   $\; ({\hat a}, {\hat b})$ est un vecteur aléatoire Gaussien
+    ;
+
+-   ${\hat \sigma}^2$ est indépendant de ${\hat a}$, ${\hat b}$ et
+    ${\bar Y}$ ;
+
+-   ${\hat a}$, ${\hat b}$ et ${\hat \sigma}^2$ sont des **estimateurs
+    convergents** de $a$, $b$ et $\sigma^2$ ;
+
+-   Fonctions pivotales (exactes) :
+
+$$\displaystyle{\frac{{\hat a} - a}{\displaystyle{\sqrt{\frac{{\hat \sigma}^2}{n} (1+\displaystyle{\frac{{\bar x}^2}{s_x^2}})}}}}\sim {\cal T}(n-2), \quad \quad  
+\displaystyle{\frac{{\hat b} - b}{\sqrt{\displaystyle{\frac{{\hat \sigma}^2}{ns_x^2}}}}}
+\sim {\cal T}(n-2), \quad \quad 
+(n-2)\displaystyle{\frac{{\hat \sigma}^2}{\sigma^2}} \sim \chi^2_{n-2};$$
+
+-   $IC^b_{1-\alpha}\stackrel{Déf.}{:}$ IC bilatéral au niveau
+    $1-\alpha$
+
+\begin{align*}
+IC^b_{1-\alpha}(a) & =   {\hat a} \pm t_{n-2,1-\alpha/2} \sqrt{\frac{{\hat \sigma}^2}{n} (1+\displaystyle{\frac{{\bar x}^2}{s_x^2})}}  \\ 
+IC^b_{1-\alpha}(b)  & =  {\hat b} \pm t_{n-2,1-\alpha/2} \sqrt{\frac{{\hat \sigma}^2}{ns_x^2}} \\
+IC^b_{1-\alpha}(\sigma^2) &=  [\displaystyle{\frac{(n-2){\hat \sigma}^2}{F^{-1}_{\chi^2_{n-2}}(1-\alpha/2)}}, \displaystyle{\frac{(n-2){\hat \sigma}^2}{F^{-1}_{\chi^2_{n-2}}(\alpha/2)}} ],
+\end{align*} où $t_{n-2,\alpha}$ désigne le quantile d'ordre $\alpha$
+d'une loi de Student à ${n-2}$ degrès de liberté et
+$F^{-1}_{\chi^2_{n-2}}(\alpha)$ désigne le quantile d'ordre $\alpha$
+d'une loi du $\chi^2_{n-2}$.
+
+## Capacité du modèle de régression à expliquer la variabilité des $Y_i$: coefficient de détermination
+
+-   Il s'agit d'évaluer la capacité du modèle de régression linéaire
+    simple à expliquer $Y$ à partir d'une relation linéaire en $x$ ; en
+    particulier, ce modèle sera acceptable si la *variabilité* des $Y_i$
+    est expliquée majoritaire par la variabilité due au modèle de
+    regression. C'est ce que fait l'analyse de la variance, qui
+    décompose la variabilité des $Y_i$ en "$S_{reg}$", la variabilité
+    expliquée par le modèle, et, "$S_{res}$", la variabilité due aux
+    résidus.
+
+-   Equation d'analyse de variance
+    $$\begin{array}{lcll}\displaystyle{\frac{1}{n}} \displaystyle{\sum_{i=1}^n} (Y_i - {\bar Y})^2 &\!\!\! = & \displaystyle{\frac{1}{n}} \displaystyle{\sum_{i=1}^n} ({\bar Y} - {\hat Y}_i)^2 & +\displaystyle{\frac{1}{n}} \displaystyle{\sum_{i=1}^n} (Y_i - {\hat Y}_i)^2\\ 
+    \text{donc} \ \displaystyle{\frac{1}{n}} \displaystyle{\sum_{i=1}^n} (Y_i - {\bar Y})^2 & \!\!\!=& \displaystyle{\frac{1}{n}} \displaystyle{\sum_{i=1}^n} ({\bar Y} - {\hat Y}_i)^2 & +  {\hat \sigma}^2_{MV}\\ 
+    \stackrel{Not.}{\text{et ainsi}} \ S_Y^2 &\!\!\! =& S_{reg} & + S_{res}\\
+    \text{ Variance totale} &\!\!\! =& \!\!\!\!\!\text{ Variance expliquée} & +\text{Variance résiduelle}\end{array}$$
+
+-   Commentaires :
+
+$(\star)$ si pour tout $i$, $Y_i={\hat Y}_i$, alors $S_Y^2=S_{reg}$ et
+la variablité des $Y_i$ coincide avec celle du modèle (*modèle parfait*)
+
+$(\star \star)$ si ${\hat b}=0$, alors ${\hat Y}_i$ ne dépend pas de $i$
+et ${\hat Y}_i={\bar Y}$, $\rightarrow$ $S_Y^2=S_{res}$, alors le modèle
+de régression linéaire n'est pas adapté pour modéliser la dépendance
+entre $Y$ et $X$.
+
+-   **Déf.** [Le coefficient de détermination $R^2$ est défini par
+    $$R^2=\displaystyle{\frac{S_{reg}}{S_Y^2}}$$]{style="color:green"}
+
+-   $R^2$: proportion de variance expliquée par la régression
+
+-   **Propriétés de** $R^2$ :
+
+$(\star)$ $0\leq R^2 \leq 1$ ;
+
+$(\star \star)$ Plus $R^2$ est proche de $1$, meilleur est l'ajustement
+du modèle de régression aux données
+
+# Données simulées
+
+-   Dans cette partie, on va simuler $n$ couples indépendants de
+    variables aléatoires $(X_i,Y_i)_{1\leq i \leq n}$ issus du modèle de
+    régression linéaire simple Gaussien avec les valeurs de $a=a_0$,
+    $b=b_0$ et $\sigma^2=s_0$ qui vont être fixées aléatoirement par les
+    commandes suivantes :\
+
+```{r,echo=TRUE,include=TRUE}
+a0<-round(runif(1,3,15),2)  
+b0<-round(runif(1,1,5),2)  
+s0<-round(runif(1,1,3),2)
+```
+
+-   [(Q1a)]{style="color:red"} Pour un $n$ quelconque ($n\geq 200$),
+    simuler $n$ variables aléatoires indépendantes et identiquement
+    distribuées $X_1,\ldots,X_{n}$ de variable aléatoire parente, $X$ de
+    la loi uniforme sur $[0,5]$. On note $(x_i)_{1\leq i \leq n}$ les
+    réalisations des $(X_i)_i$. 
+
+-   [(Q1b)]{style="color:red"} Simuler ensuite les variables aléatoires
+    indépendantes $Y_1,\ldots,Y_{n}$ issues du modèle de régression
+    linéaire Gaussien (voir section I.1) avec $a=a_0$, $b=b_0$ et
+    $\sigma^2=s_0$. On note $(y_i)_{1\leq i \leq n}$ les réalisations de
+    $(Y_i)_{1\leq i \leq n}$; la suite des $(x_i,Y_i)_{1\leq i \leq n}$
+    satisfait le modèle (1) (voir section I.1).
+
+-   [(Q2)]{style="color:red"} Représenter sur un même graphique le nuage
+    des points $(x_i,y_i)_{1\leq i \leq n}$ obtenus aux questions (Q1a)
+    et (Q1b) ainsi que la droite de régression d'équation $y=a+bx$, avec
+    $a=a_0$ et $b=b_0$.
+
+-   [(Q3)]{style="color:red"} Créer les functions "b_estim", "a_estim",
+    "sigma_estim", qui prennent en argument les couples
+    $(x_i,y_i)_{1\leq i\leq n}$ de taille quelconque $n$ et qui
+    renvoient l'estimation par les estimateurs sans biais des paramètres
+    $b$, $a$ et $\sigma^2$.
+
+-   [(Q4)]{style="color:red"} A partir du jeu de données simulées aux
+    questions (Q1a) et (Q1b), en déduire l'estimation de $a$, $b$ et
+    $\sigma^2$.
+
+-   [(Q5)]{style="color:red"} Représenter sur un même graphe, le nuage
+    de points $(x_i,y_i)_{1\leq i \leq n}$ simulés en (Q1a) et (Q1b), la
+    droite de régression $y=a_0 \; +\; b_0 \; x$ ainsi que la droite des
+    moindres carrés (utiliser différentes couleurs sur le graphique pour
+    distinguer ces deux droites).
+
+-   [(Q6)]{style="color:red"} Déterminer le vecteur des résidus
+    ${\hat \epsilon}_i$ et vérifier la propriété des résidus.
+
+-   [(Q7)]{style="color:red"} Vérifier que $({\bar x},{\bar y})$
+    appartient à la droite des moindres carrés.
+
+-   [(Q8)]{style="color:red"} En R, pour réaliser une régression
+    linéaire on utilise la fonction `lm` (linear model) dont le premier
+    argument est un objet R appelé une formule et qui spécifie une
+    "sortie" et des "entrées" séparées par le signe `~`. Les entrées et
+    sortie sont des noms de colonnes d'un `data.frame` qu'il faut
+    spécifier en deuxième argument. Par exemple, si on veut réaliser la
+    régression des données vary en fonction des données varx, on écrira
+
+```{r,echo=TRUE,include=TRUE}
+donnees <- data.frame(varx = c(0, 0.2, 0.3, 0.6), vary = c(1.01, 1.44, 1.55, 2.1))
+reg<-lm(vary~varx, data = donnees)
+```
+
+le résultat de la fonction `lm` est alors stocké dans l'objet `reg`;
+ce stockage est utile pour obtenir plus d'informations sur la régression
+effectuée, en appelant notamment la fonction `summary`: `summary(reg)`.
+
+**Fournir les correspondances entre toutes les quantités déterminées aux
+questions précédentes et celles obtenues à partir de la variable
+"reg".**
+
+-   [(Q9)]{style="color:red"} En utilisant les fonctions `a_estim` et
+    `b_estim`, illustrer graphiquement la convergence en probabilité de
+    ${\hat a}$ et ${\hat b}$ vers $a=a_0$ et $b=b_0$ quand $n$ la taille
+    de l'échantillon grandit.
+
+-   [(Q10)]{style="color:red"} En utilisant les fonctions `replicate`,
+    `a_estim`, et `b_estim`, illustrer le fait que
+    $$\displaystyle{\frac{{\hat a} - a_0}{\displaystyle{\sqrt{\frac{{\hat \sigma}^2}{n} (1+\displaystyle{\frac{{\bar x}^2}{s_x^2}})}}}}\sim {\cal T}(n-2).$$
+    *Indication :* Pour un $n$ choisi,
+
+1.  simuler $150$ réalisations de $n$ couples
+    $(x_{i,t},y_{i,t})_{ 1 \leq i \leq n}$, $1\leq t\leq 150$
+
+2.  pour tout $t =1,\ldots,150$, déterminer ${\hat a}_t$ à partir du
+    n-uplet $(x_{i,t},y_{i,t})_{ 1 \leq i \leq n}$
+
+3.  représenter sur un même graphique la densité d'une loi de Student à
+    $(n-2)$ degrès de liberté ainsi que l'histogramme de
+    $$(\frac{{\hat a}_t - a_0}{\displaystyle{\sqrt{\frac{{\hat \sigma}_t^2}{n} (1+\displaystyle{\frac{{\bar x}_t^2}{s_{x,t}^2}})}}})_{1\leq t \leq 150}.$$
+
+-   [(Q11)]{style="color:red"} Créer les fonctions `gen_IC_a`,
+    `gen_IC_b` et `gen_IC_s` qui prennent en argument le vecteur des
+    observations $(x_i,y_i)_{1\leq i \leq n}$ de taille quelconque $n$
+    et un niveau de confiance $1-\alpha$ et renvoient un intervalle de
+    confiance bilatéral pour $a$, $b$ et $\sigma^2$ sous forme d'un
+    vecteur de longueur $2$ contenant la borne inférieure et la borne
+    supérieure.
+
+-   [(Q12)]{style="color:red"} En utilisant la fonction "replicate",
+    créer $100$ intervalles de confiance pour $a$, $b$ et $\sigma^2$.
+
+-   [(Q13)]{style="color:red"} Pour visualiser les intervalles de
+    confiance, la fonction `plot_ICs` est disponible dans le fichier
+    `utils.R` à télécharger sous moodle et à sourcer par la commande
+    `source("Utils.R")`. Visualiser les intervalles de confiance de la
+    question (Q12) et commenter les.
+
+# Homoscédasticité, indépendance et normalité des résidus
+
+Le coefficient de détermination est insuffisant pour rendre compte de la
+qualité de l'ajustement. À titre d'exemple, on utilise le jeu de données
+d'Anscombe qui consiste en 4 ensembles de 11 points du plan.
+
+Sous l'hypothèse d'homoscédasticité, d'indépendance et de normalité des
+erreurs, les résidus sont indépendants (mais non identiquement
+distribués) de loi normale centrée mais de variance qui dépend de
+l'indice $i$; on préfère alors considérer les résidus corrigés qui sont
+iid de loi normale centrée et de variance égale à $\sigma^2$. Les
+résidus corrigés $\tilde{\epsilon_i}$ sont définis par
+$$\tilde{\epsilon_i} = \frac{\hat{\epsilon}_i}{\sqrt{1-h_i}}, \quad \text{avec}\; h_i = \frac{1}{n}+ \frac{(x_i-\bar{x})^2}{\sum_{j=1}^{n}(x_j -\bar{x})^2},\quad i=1,\ldots,n.$$
+
+-   [(Q14)]{style="color:red"} Representer les 4 jeux de données inclus
+    dans Anscombe.
+
+[Import du jeu de données anscombe.]{style="color:blue"}
+    
+
+```{r}
+anscombe <- read.csv('Jeux_Donnees/anscombe.csv')
+anscombe
+```
+
+[Premier jeu de données.]{style="color:blue"}
+
+```{r}
+anscombe[,which(colnames(anscombe) %in% c("X1","Y1"))]
+plot(anscombe$X1, anscombe$Y1)
+```
+
+[Deuxième jeu de données.]{style="color:blue"}
+
+```{r}
+anscombe[,which(colnames(anscombe) %in% c("X2","Y2"))]
+plot(anscombe$X2, anscombe$Y2)
+```
+
+[Troisème jeu de données.]{style="color:blue"}
+
+```{r}
+anscombe[,which(colnames(anscombe) %in% c("X3","Y3"))]
+plot(anscombe$X3, anscombe$Y3)
+```
+
+[Quatrième jeu de données.]{style="color:blue"}
+
+```{r}
+anscombe[,which(colnames(anscombe) %in% c("X4","Y4"))]
+plot(anscombe$X4, anscombe$Y4)
+```
+
+-   [(Q15)]{style="color:red"} Effectuer les régressions linéaires sur
+    les 4 ensembles de points. Discuter des résultats obtenus.
+```{r}
+reg<-lm(anscombe$Y1~anscombe$X1)
+summary(reg)
+plot(anscombe$X1, anscombe$Y1)
+abline(reg)
+reg$coefficient # a=3 et b=0.5 (environ)
+
+reg2<-lm(anscombe$Y2~anscombe$X2)
+summary(reg2)
+plot(anscombe$X2, anscombe$Y2)
+abline(reg2)
+reg2$coefficient
+
+reg3<-lm(anscombe$Y3~anscombe$X3)
+summary(reg3)
+plot(anscombe$X3, anscombe$Y3)
+abline(reg3)
+reg3$coefficient
+
+reg4<-lm(anscombe$Y4~anscombe$X4)
+summary(reg4)
+plot(anscombe$X4, anscombe$Y4)
+abline(reg4)
+reg4$coefficient
+```
+    
+
+-   [(Q16)]{style="color:red"} Pour estimer la qualité de l'ajustement,
+    on utilise quelques diagnostics graphiques qui permettent de
+    vérifier empiriquement la validité des hypothèses $(\mathcal{ H})$
+    (cf section 7.5 du poly de cours).
+
+    Faire une analyse des résidus et discuter de la validité des
+    hypothèses de normalité, d'homoscédasticité et éventuellement des
+    hypothèses de linéarité et d'indépendance pour l'ensemble des
+    régressions linéaires proposées par le jeu de données Anscombe.
+
+    En particulier, on tracera
+
+    -   Pour la normalité, le diagramme quantile--quantile des résidus
+        avec les fonctions `qqnorm` et `qqline` (on pourra également
+        tracer l'histogramme des résidus corrigés et y superposer la
+        densité d'une normale d'espérance leur moyenne empirique et
+        d'écart-type, leur écart-type empirique);
+
+    -   Pour l'homoscédasticité et éventuellement l'indépendance, les
+        résidus standardisés (`rstandard`) en fonction des prédictions
+        (`fitted.values`) ou bien en fonction des valeurs de la variable
+        explicative.
+
+# Jeu de données réelles `Real_Data`
+
+-   Choisir un jeu de données $(x_i,y_i)_i$ dans l'un des trois fichiers
+    proposés `car.csv` ou `bodyfat.dat` ou `happiness.csv` ou choisir un
+    jeu de données qui vous est propre :
+
+    -   si vous optez pour l'un des jeu de données proposés, alors vous
+        choisirez un jeu de données qui vous parait cohérent de
+        modéliser par le modèle de régression linéaire et vous décrirez
+        votre démarche dans la question 14; en particulier, avant de
+        retenir une paire de variables qui convient, vous étudierez les
+        possibilités de modèles possibles de régression pour différentes
+        paires de variables numériques du data.frame.
+
+    -   Si vous optez pour un jeu de données qui vous est propre, alors
+        demandez l'avis au responsable de l'uv avant de traiter la
+        suite.
+
+-   Charger le jeu de données `Real_Data`
+
+## Quelques éléments de statistique descriptive
+
+-   [(Q17)]{style="color:red"} Motiver le choix de votre jeu de données
+    par des éléments de statistique descriptive qui vous font penser que
+    la modélisation de ce jeu de données par un modèle de régression
+    linéaire parait judicieux (représentation graphique, coefficient de
+    corrélation,..., ..)
+
+## Estimation ponctuelle et par IC des paramètres
+
+-   [(Q18)]{style="color:red"} Estimer les paramètres du modèle de
+    régression, tracer sur un graphique le nuage de points ainsi que la
+    droite des moindres carrés et discuter de la pertinence de votre
+    choix de modèle.
+
+-   [(Q19)]{style="color:red"} A l'aide de la fonction `confint`,
+    déterminer un estimation par intervalle de confiance des paramètres
+    de la droite de régression.
+
+## Qualité de l'ajustement
+
+-   [(Q20)]{style="color:red"} Déterminer le coefficient $R^2$ de la
+    régression linéaire sur votre jeu de données; qu'en pensez-vous ?
+
+-   [(Q21)]{style="color:red"} Vérifier que
+    $R^2= \displaystyle{\frac{s^2_{xy}}{s_x^2s_y^2}}=(\text{ corrélation empirique entre } x \text{ et } y)^2$.
+
+-   [(Q22)]{style="color:red"} Tester si le coefficient de la pente est
+    nul, c-à-d, tester $H_0 : \; b=0$ contre $H_1 \;:$ le complémentaire
+    de $H_0$. Ce problème de test est une des démarches statistiques
+    possibles pour valider le modèle de régression linéaire.
+
+*Indication* : On pourra utiliser la fonction pivotale pour $b$ (cf
+section I.3 de ce document et/ou Proposition 7.6 du poly CM) ou bien
+directement la variable dans laquelle est stocké l'objet renvoyé par la
+fonction "lm".
+
+## Validation des hypothèses $(\mathcal{ H})$ (cf Section 7.5.4, poly CM)
+
+-   [(Q23)]{style="color:red"} Evaluer visuellement la normalité des
+    résidus corrigés à l'aide d'un diagramme quantile--quantile
+    (fonctions "qqnorm" et "qqline").
+
+-   [(Q24)]{style="color:red"} Evaluer visuellement l'indépendance des
+    résidus corrigés et l'hypothèse d'homoscédasticité à l'aide du
+    graphe des résidus corrigés versus la variable explicative.
+
+## Prévision (cf Section 7.5.5, poly CM)
+
+$\hookrightarrow$ si le modèle proposé semble être pertinent, avec
+$y={\hat a} + {\hat b}x$ la droite des moindres carrés,
+
+$\hookrightarrow$ et si $x_0$ désigne une nouvelle valeur de $x$ pour
+laquelle on n'observe pas de réalisation $y_0$ de $Y_0$,
+
+$\Rightarrow$ il s'agit alors de "prédire" la valeur de la variable
+$Y_0$ qui suit le modèle, $Y_0=a+bx_0 + \epsilon_0$,
+$\epsilon_0 \sim {\cal N}(0,\sigma^2)$ et où $\epsilon_0$ est
+indépendante des $\epsilon_i$, $i=1,\ldots,n$.
+
+$\hookrightarrow$ Plus précisément, on s'intéresse à l'estimation
+ponctuelle de $\mathbb{E}(Y_0)$
+
+-   Notation : ${\hat Y}_0={\hat a} + {\hat b}x_0$
+
+-   remarquons que
+    $\mathbb{E}({\hat Y}_0)= \mathbb{E}({\hat a} + {\hat b}x_0)= a+bx_0= \mathbb{E} (Y_0)$
+
+-   $\Rightarrow$ ${\hat Y}_0$ est alors un **estimateur** sans biais de
+    $\mathbb{E} (Y_0)$
+
+-   remarquons que ${\hat Y}_0$ depend, au travers de ${\hat a}$ et
+    ${\hat b}$, de $(Y_1,\ldots,Y_n)$ mais pas de $Y_0$!
+
+-   [(Q25)]{style="color:red"} Considérer deux nouvelles valeurs de $x$
+    pour lesquelles on déterminera un intervalle de confiance pour
+    $\mathbb{E}(Y_0)$ au niveau $0.95$ et un intervalle de prédiction au
+    niveau $0.95$.
+
+## Conclusion
+
+-   [(Q26)]{style="color:red"} Votre conclusion en deux ou trois
+    phrases.
