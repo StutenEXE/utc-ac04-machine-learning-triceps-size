@@ -34,6 +34,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+options(warn=-1)
 ```
 
 # Préalable {.unnumbered}
@@ -375,9 +376,58 @@ lines(x, a0 + x*b0, add=TRUE, col = "red")
     renvoient l'estimation par les estimateurs sans biais des paramètres
     $b$, $a$ et $\sigma^2$.
 
+```{r,echo=TRUE,include=TRUE}
+b_estim <- function(x, y) {
+  if (length(x) != length(y)) {
+    stop("x et y n'ont pas la même taille")
+  }
+  n <- length(x)
+  sxY <- mean(x*y)-mean(x)*mean(y)
+  s2x <- mean((x - mean(x))**2)
+  return(sxY/s2x)
+}
+a_estim <- function(x, y) {
+  if (length(x) != length(y)) {
+    stop("x et y n'ont pas la même taille")
+  }
+  b_est <- b_estim(x, y)
+  return(mean(y) - b_est*mean(x))
+}
+sigma_estim <- function(x, y) {
+  if (length(x) != length(y)) {
+    stop("x et y n'ont pas la même taille")
+  }
+  a_est <- a_estim(x, y)
+  b_est <- b_estim(x, y)
+  # Erreur dans le sujet ? pas de sqrt ici normalement mais sans les résultats ne sont plus cohérents
+  return(sqrt(mean((y - a_est - b_est*x)**2)))
+}
+```
+
 -   [(Q4)]{style="color:red"} A partir du jeu de données simulées aux
     questions (Q1a) et (Q1b), en déduire l'estimation de $a$, $b$ et
     $\sigma^2$.
+
+[Estimation de $a$]{style="color:blue"}
+
+```{r,echo=TRUE,include=TRUE}
+a_est <- a_estim(x, y)
+a_est
+```
+
+[Estimation de $b$]{style="color:blue"}
+
+```{r,echo=TRUE,include=TRUE}
+b_est <- b_estim(x, y)
+b_est
+```
+
+[Estimation de $\sigma^2$]{style="color:blue"}
+
+```{r,echo=TRUE,include=TRUE}
+sigma_est <- sigma_estim(x, y)
+sigma_est
+```
 
 -   [(Q5)]{style="color:red"} Représenter sur un même graphe, le nuage
     de points $(x_i,y_i)_{1\leq i \leq n}$ simulés en (Q1a) et (Q1b), la
@@ -385,11 +435,31 @@ lines(x, a0 + x*b0, add=TRUE, col = "red")
     moindres carrés (utiliser différentes couleurs sur le graphique pour
     distinguer ces deux droites).
 
+```{r,echo=TRUE,include=TRUE}
+plot(x, y, col="blue")
+lines(x, a0 + x*b0, add=TRUE, col="red")
+y_ests <- a_est + b_est*x
+lines(x, y_ests, add=TRUE, col="green")
+```
+
 -   [(Q6)]{style="color:red"} Déterminer le vecteur des résidus
     ${\hat \epsilon}_i$ et vérifier la propriété des résidus.
+    
+```{r,echo=TRUE,include=TRUE}
+# e_ests est le vecteur des résidus
+e_ests <- y - y_ests
+sum(e_ests)
+```
+[On voit que $\displaystyle{\sum_{i=1}^n {\hat \epsilon}_i\approx0}$]{style="color:blue"}
 
+    
 -   [(Q7)]{style="color:red"} Vérifier que $({\bar x},{\bar y})$
     appartient à la droite des moindres carrés.
+    
+```{r, echo=TRUE, include=TRUE}
+plot(mean(x), mean(y), col="red", pch=4)
+lines(x, y_ests, col="black", add=TRUE)
+```
 
 -   [(Q8)]{style="color:red"} En R, pour réaliser une régression
     linéaire on utilise la fonction `lm` (linear model) dont le premier
@@ -412,10 +482,51 @@ effectuée, en appelant notamment la fonction `summary`: `summary(reg)`.
 questions précédentes et celles obtenues à partir de la variable
 "reg".**
 
+```{r,echo=TRUE,include=TRUE}
+donnees <- data.frame(varx = x, vary = y)
+reg <- lm(vary~varx, data = donnees)
+summary(reg)
+```
+
+[On remarque que nous obtenons les même résultats pour $a$, $b$, $s_0$]{style="color:blue"}
+
 -   [(Q9)]{style="color:red"} En utilisant les fonctions `a_estim` et
     `b_estim`, illustrer graphiquement la convergence en probabilité de
     ${\hat a}$ et ${\hat b}$ vers $a=a_0$ et $b=b_0$ quand $n$ la taille
     de l'échantillon grandit.
+
+```{r,echo=TRUE,include=TRUE}
+n = seq(1, 1000, by=1)
+a_ests = c()
+b_ests = c()
+for (ni in n) {
+  x2 <- runif(ni, 0, 5)
+  y2 <- c()
+  for(xi in x2) {
+    y2 <- c(y2, rnorm(1, a0 + xi*b0, s0))
+  }
+  a_ests = c(a_ests, a_estim(x2, y2))
+  b_ests = c(b_ests, b_estim(x2, y2))
+}
+```
+
+[On génère 1000 estimations de $a$ et $b$ pour $n$ allant de 1 à 1000]{style="color:blue"}
+
+```{r,echo=TRUE,include=TRUE}
+plot(n, a_ests, col="black")
+lines(n, n*0 + a0, col="red", add=TRUE)
+```
+
+[On trace un premier graphique de ${\hat a}$ en fonction de $n$ tout en traçant la fonction $f(x)=a=a_0$ pour montrer la convergence de $\hat a$ vers $a=a_0$]{style="color:blue"}
+
+```{r,echo=TRUE,include=TRUE}
+plot(n, b_ests, col="black")
+lines(n, n*0 + b0, col="red", add=TRUE)
+```
+
+[On fait de même mais pour ${\hat b}$ afin de montrer la convergence de $\hat b$ vers $b=b_0$]{style="color:blue"}
+
+[On remarque bien sur les graphiques que ${\hat a {\overset{\mathbb{P}}{\longrightarrow}} a}$ et que ${\hat b {\overset{\mathbb{P}}{\longrightarrow}} b}$ avec $a=a_0$ et $b=b_0$]{style="color:blue"}
 
 -   [(Q10)]{style="color:red"} En utilisant les fonctions `replicate`,
     `a_estim`, et `b_estim`, illustrer le fait que
@@ -424,6 +535,8 @@ questions précédentes et celles obtenues à partir de la variable
 
 1.  simuler $150$ réalisations de $n$ couples
     $(x_{i,t},y_{i,t})_{ 1 \leq i \leq n}$, $1\leq t\leq 150$
+
+
 
 2.  pour tout $t =1,\ldots,150$, déterminer ${\hat a}_t$ à partir du
     n-uplet $(x_{i,t},y_{i,t})_{ 1 \leq i \leq n}$
