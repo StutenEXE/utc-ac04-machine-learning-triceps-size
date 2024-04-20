@@ -352,10 +352,14 @@ x <- runif(n, 0, 5)
     satisfait le modèle (1) (voir section I.1).
 
 ```{r,echo=TRUE,include=TRUE}
-y <- c()
-for(xi in x) {
-  y <- c(y, rnorm(1, a0 + xi*b0, s0))
+generate_y <- function(x, a, b, s) {
+  v <- c()
+  for(xi in x) {
+    v <- c(v, rnorm(1, a + xi*b, s))
+  }
+  return(v)
 }
+y <- generate_y(x, a0, b0, s0)
 ```
 
 -   [(Q2)]{style="color:red"} Représenter sur un même graphique le nuage
@@ -501,10 +505,7 @@ a_ests = c()
 b_ests = c()
 for (ni in n) {
   x2 <- runif(ni, 0, 5)
-  y2 <- c()
-  for(xi in x2) {
-    y2 <- c(y2, rnorm(1, a0 + xi*b0, s0))
-  }
+  y2 <- generate_y(x2, a0, b0, s0)
   a_ests = c(a_ests, a_estim(x2, y2))
   b_ests = c(b_ests, b_estim(x2, y2))
 }
@@ -537,13 +538,30 @@ lines(n, n*0 + b0, col="red", add=TRUE)
     $(x_{i,t},y_{i,t})_{ 1 \leq i \leq n}$, $1\leq t\leq 150$
 
 
-
 2.  pour tout $t =1,\ldots,150$, déterminer ${\hat a}_t$ à partir du
     n-uplet $(x_{i,t},y_{i,t})_{ 1 \leq i \leq n}$
 
 3.  représenter sur un même graphique la densité d'une loi de Student à
     $(n-2)$ degrès de liberté ainsi que l'histogramme de
     $$(\frac{{\hat a}_t - a_0}{\displaystyle{\sqrt{\frac{{\hat \sigma}_t^2}{n} (1+\displaystyle{\frac{{\bar x}_t^2}{s_{x,t}^2}})}}})_{1\leq t \leq 150}.$$
+    
+```{r,echo=TRUE,include=TRUE}
+n <- 200
+xt <- replicate(150, runif(n, 0, 5))
+formulas <- c()
+for (t in 1:150) {
+  xti <- xt[t,]
+  yti <- generate_y(xti, a0, b0, s0)
+  a_est_t <- a_estim(xti, yti)
+  s2xt <-  mean((xti - mean(xti))**2)
+  res <- (a_est_t - a0)/sqrt((var(yti)/n)*(1+((mean(xti)**2)/s2xt)))
+  formulas <- c(formulas, res)
+}
+hist(formulas)
+curve(dt(x, df=n-2), col="red", add=TRUE)
+```
+
+[Oula wtf c'est pas ca qu'on doit avoir l'équipe]{style="color:blue"}
 
 -   [(Q11)]{style="color:red"} Créer les fonctions `gen_IC_a`,
     `gen_IC_b` et `gen_IC_s` qui prennent en argument le vecteur des

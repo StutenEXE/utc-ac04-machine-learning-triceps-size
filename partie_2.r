@@ -15,10 +15,14 @@ x <- runif(n, 0, 5)
 
 
 ## Q1b - On crée Y tel que y suit une formule de regression lineaire (basée sur la loi normale)
-y <- c()
-for(xi in x) {
-  y <- c(y, rnorm(1, a0 + xi*b0, s0))
+generate_y <- function(x, a, b, s) {
+  v <- c()
+  for(xi in x) {
+    v <- c(v, rnorm(1, a + xi*b, s))
+  }
+  return(v)
 }
+y <- generate_y(x, a0, b0, s0)
 
 ## Q2
 plot(x, y, col="blue")
@@ -82,10 +86,7 @@ a_ests = c()
 b_ests = c()
 for (ni in n) {
   x2 <- runif(ni, 0, 5)
-  y2 <- c()
-  for(xi in x2) {
-    y2 <- c(y2, rnorm(1, a0 + xi*b0, s0))
-  }
+  y2 <- generate_y(x2, a0, b0, s0)
   a_ests = c(a_ests, a_estim(x2, y2))
   b_ests = c(b_ests, b_estim(x2, y2))
 }
@@ -93,3 +94,19 @@ plot(n, a_ests, col="black")
 lines(n, n*0 + a0, col="red", add=TRUE)
 plot(n, b_ests, col="black")
 lines(n, n*0 + b0, col="red", add=TRUE)
+
+## Q10
+n <- 200
+xt <- replicate(150, runif(n, 0, 5))
+formulas <- c()
+for (t in 1:150) {
+  xti <- xt[t,]
+  yti <- generate_y(xti, a0, b0, s0)
+  a_est_t <- a_estim(xti, yti)
+  s2xt <-  mean((xti - mean(xti))**2)
+  res <- (a_est_t - a0)/sqrt((var(yti)/n)*(1+((mean(xti)**2)/s2xt)))
+  formulas <- c(formulas, res)
+}
+hist(formulas)
+curve(dt(x, df=n-2), col="red", add=TRUE)
+      
