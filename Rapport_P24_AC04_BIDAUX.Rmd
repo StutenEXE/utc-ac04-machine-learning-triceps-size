@@ -78,8 +78,9 @@ modélisation de la relation entre les deux variables considérées.
     fixée au **vendredi 29 mars 2024.**
 
 3.  **Format du rapport.** Le rapport sera rédigé sous la forme d'un
-    fichier [_RMarkdown_](https://rmarkdown.rstudio.com/articles_intro.html)
-    ou [_quarto_](https://quarto.org/) (l'extension de votre fichier doit
+    fichier
+    [*RMarkdown*](https://rmarkdown.rstudio.com/articles_intro.html) ou
+    [*quarto*](https://quarto.org/) (l'extension de votre fichier doit
     être `.rmd` ou `.qmd` selon le type de fichier); un fichier `.rmd`
     ou `.qmd` est créé à partir du logiciel RStudio. Ce type de fichier
     permet d'inclure à la fois des lignes de code R et du texte. Vous
@@ -100,20 +101,22 @@ modélisation de la relation entre les deux variables considérées.
     `Rapport_P24_AC04_NOM_ETUDIANT_premier_dans_la_liste_alphabétique_du_groupe`
 
 6.  **Date limite.** Vous devrez impérativement déposer votre rapport
-    sur le moodle pour le **vendredi 6 juin 2024 à 23h (heure de Paris)** 
-    au plus tard (au delà de cette date et heure, le moodle n'acceptera pas votre rapport) ; 
-    le non-envoi du rapport implique un zéro à la note d'évaluation de TP pour
-    l'ensemble des étudiants du groupe en question.
+    sur le moodle pour le **vendredi 6 juin 2024 à 23h (heure de
+    Paris)** au plus tard (au delà de cette date et heure, le moodle
+    n'acceptera pas votre rapport) ; le non-envoi du rapport implique un
+    zéro à la note d'évaluation de TP pour l'ensemble des étudiants du
+    groupe en question.
 
 7.  **Notation du rapport** Dans la note attribuée à chaque projet
     rendu, seront pris en compte entre autres, la faisabilité de la
-    compilation du ficher `.rmd`/`.qmd` et le respect des consignes (rédaction,
-    format, utilisation d'une fonction particulière sous R,...). Le travail fourni dans le 
-    cadre de se projet doit être un travail original. 
-    Tout plagiat ou utilisation des modèles d'IA générative (Large Language Models comme 
-    ChatGPT) est donc, par conséquence, strictement interdit. 
-    Tout manquement sera apprécié au titre de la fraude et fera l'objet 
-    de poursuites conformément au règlement des études.
+    compilation du ficher `.rmd`/`.qmd` et le respect des consignes
+    (rédaction, format, utilisation d'une fonction particulière sous
+    R,...). Le travail fourni dans le cadre de se projet doit être un
+    travail original. Tout plagiat ou utilisation des modèles d'IA
+    générative (Large Language Models comme ChatGPT) est donc, par
+    conséquence, strictement interdit. Tout manquement sera apprécié au
+    titre de la fraude et fera l'objet de poursuites conformément au
+    règlement des études.
 
 8.  **Evaluation du TP** Les soutenances orales se dérouleront le sur la
     semaine avant les finaux. Les créneaux dédiés aux soutenances ainsi
@@ -181,8 +184,7 @@ Notons que :
     $x$ avec $a$ l'intercept (la valeur de la droite à l'origine) et $b$
     la pente]{style="color:green"}
 
--   **les paramètres du modèle sont**: $a,\;b$ réels et
-    $\sigma^2>0$
+-   **les paramètres du modèle sont**: $a,\;b$ réels et $\sigma^2>0$
 
 Une fois que le modèle posé, [il s'agit d'estimer les paramètres du
 modèles, puis de valider le modèle retenu et enfin de faire de la
@@ -248,8 +250,7 @@ $${\hat \sigma}^2=\displaystyle{\frac{n}{n-2}}\;  {\hat\sigma_{MV}^2}= \; \displ
 -   ${\rm Cov}({\hat a}, {\hat b})=-\displaystyle{\frac{{\bar x}\sigma^2}{ns_x^2}}$
     ;
 
--   $\; ({\hat a}, {\hat b})$ est un vecteur aléatoire Gaussien
-    ;
+-   $\; ({\hat a}, {\hat b})$ est un vecteur aléatoire Gaussien ;
 
 -   ${\hat \sigma}^2$ est indépendant de ${\hat a}$, ${\hat b}$ et
     ${\bar Y}$ ;
@@ -333,7 +334,14 @@ s0<-round(runif(1,1,3),2)
     simuler $n$ variables aléatoires indépendantes et identiquement
     distribuées $X_1,\ldots,X_{n}$ de variable aléatoire parente, $X$ de
     la loi uniforme sur $[0,5]$. On note $(x_i)_{1\leq i \leq n}$ les
-    réalisations des $(X_i)_i$. 
+    réalisations des $(X_i)_i$.
+
+```{r,echo=TRUE,include=TRUE}
+# n est une valeure aléatoire comprise entre 200 et 1000
+# (si on veut des résultats toujours a peu près similaire on peut aussi fixer la variable)
+n <- sample(200:1000,1, replace=F) 
+x <- runif(n, 0, 5)
+```
 
 -   [(Q1b)]{style="color:red"} Simuler ensuite les variables aléatoires
     indépendantes $Y_1,\ldots,Y_{n}$ issues du modèle de régression
@@ -342,10 +350,24 @@ s0<-round(runif(1,1,3),2)
     $(Y_i)_{1\leq i \leq n}$; la suite des $(x_i,Y_i)_{1\leq i \leq n}$
     satisfait le modèle (1) (voir section I.1).
 
+```{r,echo=TRUE,include=TRUE}
+y <- c()
+for(xi in x) {
+  y <- c(y, rnorm(1, a0 + xi*b0, s0))
+}
+```
+
 -   [(Q2)]{style="color:red"} Représenter sur un même graphique le nuage
     des points $(x_i,y_i)_{1\leq i \leq n}$ obtenus aux questions (Q1a)
     et (Q1b) ainsi que la droite de régression d'équation $y=a+bx$, avec
     $a=a_0$ et $b=b_0$.
+
+```{r,echo=TRUE,include=TRUE}
+# y en fonction de x (plot)
+plot(x, y, col = "blue")
+# b0*x + a0 (courbe) 
+lines(x, a0 + x*b0, add=TRUE, col = "red")
+```
 
 -   [(Q3)]{style="color:red"} Créer les functions "b_estim", "a_estim",
     "sigma_estim", qui prennent en argument les couples
@@ -382,8 +404,8 @@ donnees <- data.frame(varx = c(0, 0.2, 0.3, 0.6), vary = c(1.01, 1.44, 1.55, 2.1
 reg<-lm(vary~varx, data = donnees)
 ```
 
-le résultat de la fonction `lm` est alors stocké dans l'objet `reg`;
-ce stockage est utile pour obtenir plus d'informations sur la régression
+le résultat de la fonction `lm` est alors stocké dans l'objet `reg`; ce
+stockage est utile pour obtenir plus d'informations sur la régression
 effectuée, en appelant notamment la fonction `summary`: `summary(reg)`.
 
 **Fournir les correspondances entre toutes les quantités déterminées aux
@@ -445,7 +467,6 @@ $$\tilde{\epsilon_i} = \frac{\hat{\epsilon}_i}{\sqrt{1-h_i}}, \quad \text{avec}\
     dans Anscombe.
 
 [Import du jeu de données anscombe.]{style="color:blue"}
-    
 
 ```{r}
 anscombe <- read.csv('Jeux_Donnees/anscombe.csv')
@@ -482,6 +503,7 @@ plot(anscombe$X4, anscombe$Y4)
 
 -   [(Q15)]{style="color:red"} Effectuer les régressions linéaires sur
     les 4 ensembles de points. Discuter des résultats obtenus.
+
 ```{r}
 reg<-lm(anscombe$Y1~anscombe$X1)
 summary(reg)
@@ -507,7 +529,6 @@ plot(anscombe$X4, anscombe$Y4)
 abline(reg4)
 reg4$coefficient
 ```
-    
 
 -   [(Q16)]{style="color:red"} Pour estimer la qualité de l'ajustement,
     on utilise quelques diagnostics graphiques qui permettent de
