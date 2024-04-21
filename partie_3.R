@@ -32,6 +32,6 @@ plot(anscombe$X4, anscombe$Y4)
 abline(reg4)
 reg4$coefficient
 
-# Droites de régression linéaires ont les mêmes equations et les doeff r² sont quasiment les mêmes au millième près
+# Droites de régressions linéaires ont les mêmes équations et les coeffs r² sont quasiment les mêmes au millième près
 
 # Q16
