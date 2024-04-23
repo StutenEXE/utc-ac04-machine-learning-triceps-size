@@ -547,21 +547,32 @@ lines(n, n*0 + b0, col="red", add=TRUE)
     
 ```{r,echo=TRUE,include=TRUE}
 n <- 200
+# Creation de 150 vecteurs de n variables aleatoires suivant une loi Uniforme[0,5]
 xt <- replicate(150, runif(n, 0, 5))
 formulas <- c()
 for (t in 1:150) {
   xti <- xt[t,]
+  # Pour chaque vecteur xti, on génére un vecteur yti
   yti <- generate_y(xti, a0, b0, s0)
   a_est_t <- a_estim(xti, yti)
-  s2xt <-  mean((xti - mean(xti))**2)
-  res <- (a_est_t - a0)/sqrt((var(yti)/n)*(1+((mean(xti)**2)/s2xt)))
+  sigma_est_t <- sigma_estim(xti, yti)
+  # Ici on utilise b_estim mais nous ne savons pas comment l'utiliser autre
+  s2xt <- mean((yti - mean(yti))*(xti - mean(xti)))/b_estim(xti, yti)
+  #s2xt <-  mean((xti - mean(xti))**2)
+  # On calcule avec formule donnée et on stocke dans le vecteur formulas 
+  res <- (a_est_t - a0)/sqrt((sigma_est_t/n)*(1+((mean(xti)**2)/s2xt)))
   formulas <- c(formulas, res)
 }
-hist(formulas)
+# Comparaison de la répartition de nos formules avec la fonction de 
+# densité de la loi de Student à n-2 degrés de liberté
+hist(formulas, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
 curve(dt(x, df=n-2), col="red", add=TRUE)
 ```
 
-[Oula wtf c'est pas ca qu'on doit avoir l'équipe]{style="color:blue"}
+[On remarque que la cloche formée par l'histogramme suit graphiquement le même parcours de la loi de Student à n-2 degrés de liberté. ]{style="color:blue"}
+[On en déduit que $\displaystyle{\frac{{\hat a} - a_0}{\displaystyle{\sqrt{\frac{{\hat \sigma}^2}{n} (1+\displaystyle{\frac{{\bar x}^2}{s_x^2}})}}}}\sim {\cal T}(n-2).$]{style="color:blue"}
+
+[PROBLEME, ON SE SERT DE b_estim DE MANIERE DETOURNEE, VOIR SI C'EST BIEN COMME CA QU'IL FAUT LE FAIRE]{style="color:green"}
 
 -   [(Q11)]{style="color:red"} Créer les fonctions `gen_IC_a`,
     `gen_IC_b` et `gen_IC_s` qui prennent en argument le vecteur des

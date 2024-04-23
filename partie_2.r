@@ -103,10 +103,12 @@ for (t in 1:150) {
   xti <- xt[t,]
   yti <- generate_y(xti, a0, b0, s0)
   a_est_t <- a_estim(xti, yti)
-  s2xt <-  mean((xti - mean(xti))**2)
-  res <- (a_est_t - a0)/sqrt((var(yti)/n)*(1+((mean(xti)**2)/s2xt)))
+  s2xt <- mean((yti - mean(yti))*(xti - mean(xti)))/b_estim(xti, yti)
+  #s2xt <-  mean((xti - mean(xti))**2)
+  sigma_est_t <- sigma_estim(xti, yti)
+  res <- (a_est_t - a0)/sqrt((sigma_est_t/n)*(1+((mean(xti)**2)/s2xt)))
   formulas <- c(formulas, res)
 }
-hist(formulas)
+hist(formulas, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
 curve(dt(x, df=n-2), col="red", add=TRUE)
       
