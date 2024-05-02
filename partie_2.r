@@ -81,7 +81,7 @@ reg <- lm(vary~varx, data = donnees)
 summary(reg)
 
 ## Q9
-n = seq(1, 1000, by=1)
+n = seq(2, 1000, by=1)
 a_ests = c()
 b_ests = c()
 for (ni in n) {
@@ -111,4 +111,40 @@ for (t in 1:150) {
 }
 hist(formulas, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
 curve(dt(x, df=n-2), col="red", add=TRUE)
-      
+
+## Q11 - Finir samedi
+gen_IC_a <- function (xi, yi, n, niveauconfiance) {
+  print(niveauconfiance)
+  alpha <- 1 - niveauconfiance
+  s2x <- mean((yti - mean(yti))*(xti - mean(xti)))/b_estim(xti, yti)
+  loi_student <- dt(xi, df=n-2)
+  q <- quantile(loi_student, probs = c(1-alpha/2))
+  quantiles <- c(-q, q)
+  sigma_est <- sigma_estim(xi, yi)
+  a_est <- a_estim(xi, yi)
+  a_IC <- a_est + quantiles*sqrt((sigma_est/n)*(1+((mean(xi)**2)/s2x)))
+  return(unname(a_IC))
+}
+gen_IC_b <- function (xi, yi, n, niveauconfiance) {
+  alpha <- 1 - niveauconfiance
+  s2x <- mean((yti - mean(yti))*(xti - mean(xti)))/b_estim(xti, yti)
+  loi_student <- dt(xi, df=n-2)
+  q <- quantile(loi_student, probs = c(1-alpha/2))
+  quantiles <- c(-q, q)
+  sigma_est <- sigma_estim(xi, yi)
+  b_est <- b_estim(xi, yi)
+  b_IC <- b_est + quantiles*sqrt(sigma_est/(n*s2x))
+  return(unname(b_IC))
+}
+# A revoir car la formule du Chi2 n'est pas bonne
+gen_IC_s <- function (xi, yi, n, niveauconfiance) {
+   alpha <- 1 - niveauconfiance
+   sigma_est <- sigma_estim(xi, yi)
+   loi_chi2 <- dchisq(xi, df=n-2)
+   quantiles <- quantile(loi_chi2, probs=c(1-(alpha/2), alpha/2))
+   s_IC <- ((n-2)*sigma_est)/quantiles
+   return(unname(s_IC))
+}
+
+## Q12
+a_IC_100 <- replicate(100, gen_IC_a(runif(n, 0, 5), generate_y(xs, a0, b0, s0), n, runif(1)))
