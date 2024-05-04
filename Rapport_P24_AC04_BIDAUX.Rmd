@@ -381,30 +381,27 @@ lines(x, a0 + x*b0, add=TRUE, col = "red")
     $b$, $a$ et $\sigma^2$.
 
 ```{r,echo=TRUE,include=TRUE}
-b_estim <- function(x, y) {
-  if (length(x) != length(y)) {
-    stop("x et y n'ont pas la même taille")
-  }
-  n <- length(x)
+b_estim <- function(xy, n) {
+  x <- xy[[1]]
+  y <- xy[[2]]
   sxY <- mean(x*y)-mean(x)*mean(y)
   s2x <- mean((x - mean(x))**2)
   return(sxY/s2x)
 }
-a_estim <- function(x, y) {
-  if (length(x) != length(y)) {
-    stop("x et y n'ont pas la même taille")
-  }
-  b_est <- b_estim(x, y)
+a_estim <- function(xy, n) {
+  x <- xy[[1]]
+  y <- xy[[2]]
+  b_est <- b_estim(xy, n)
   return(mean(y) - b_est*mean(x))
 }
-sigma_estim <- function(x, y) {
-  if (length(x) != length(y)) {
-    stop("x et y n'ont pas la même taille")
-  }
-  a_est <- a_estim(x, y)
-  b_est <- b_estim(x, y)
+sigma_estim <- function(xy, n) {
+  x <- xy[[1]]
+  y <- xy[[2]]
+  a_est <- a_estim(xy, n)
+  b_est <- b_estim(xy, n)
   # Erreur dans le sujet ? pas de sqrt ici normalement mais sans les résultats ne sont plus cohérents
   return(sqrt(mean((y - a_est - b_est*x)**2)))
+  #return(mean((y - a_est - b_est*x)**2))
 }
 ```
 
@@ -415,21 +412,23 @@ sigma_estim <- function(x, y) {
 [Estimation de $a$]{style="color:blue"}
 
 ```{r,echo=TRUE,include=TRUE}
-a_est <- a_estim(x, y)
+# On crée la liste de couples
+xy <- list(x,y)
+a_est <- a_estim(xy, n)
 a_est
 ```
 
 [Estimation de $b$]{style="color:blue"}
 
 ```{r,echo=TRUE,include=TRUE}
-b_est <- b_estim(x, y)
+b_est <- b_estim(xy, n)
 b_est
 ```
 
 [Estimation de $\sigma^2$]{style="color:blue"}
 
 ```{r,echo=TRUE,include=TRUE}
-sigma_est <- sigma_estim(x, y)
+sigma_est <- sigma_estim(xy, n)
 sigma_est
 ```
 
@@ -500,14 +499,15 @@ summary(reg)
     de l'échantillon grandit.
 
 ```{r,echo=TRUE,include=TRUE}
-n = seq(1, 1000, by=1)
+n = seq(2, 1000, by=1)
 a_ests = c()
 b_ests = c()
 for (ni in n) {
   x2 <- runif(ni, 0, 5)
   y2 <- generate_y(x2, a0, b0, s0)
-  a_ests = c(a_ests, a_estim(x2, y2))
-  b_ests = c(b_ests, b_estim(x2, y2))
+  x2y2 <- list(x2, y2)
+  a_ests = c(a_ests, a_estim(x2y2, ni))
+  b_ests = c(b_ests, b_estim(x2y2, ni))
 }
 ```
 
@@ -546,19 +546,23 @@ lines(n, n*0 + b0, col="red", add=TRUE)
     $$(\frac{{\hat a}_t - a_0}{\displaystyle{\sqrt{\frac{{\hat \sigma}_t^2}{n} (1+\displaystyle{\frac{{\bar x}_t^2}{s_{x,t}^2}})}}})_{1\leq t \leq 150}.$$
     
 ```{r,echo=TRUE,include=TRUE}
+gen_couple_xy <- function(n) {
+  x <- runif(n, 0, 5)
+  y <- generate_y(x, a0, b0, s0)
+  return(list(x,y))
+}
 n <- 200
-# Creation de 150 vecteurs de n variables aleatoires suivant une loi Uniforme[0,5]
-xt <- replicate(150, runif(n, 0, 5))
+# Creation de 150 couples (x, y)
+xt_yt <- replicate(150, gen_couple_xy(n))
 formulas <- c()
 for (t in 1:150) {
-  xti <- xt[t,]
-  # Pour chaque vecteur xti, on génére un vecteur yti
-  yti <- generate_y(xti, a0, b0, s0)
-  a_est_t <- a_estim(xti, yti)
-  sigma_est_t <- sigma_estim(xti, yti)
-  # Ici on utilise b_estim mais nous ne savons pas comment l'utiliser autre
-  s2xt <- mean((yti - mean(yti))*(xti - mean(xti)))/b_estim(xti, yti)
+  xti <- unlist(xt_yt[1, t])
+  yti <- unlist(xt_yt[2, t])
+  a_est_t <- a_estim(xt_yt[, t], n)
+  # Ici on utilise b_estim mais nous ne savons pas comment l'utiliser autrement
+  s2xt <- mean((yti - mean(yti))*(xti - mean(xti)))/b_estim(xt_yt[, t], n)
   #s2xt <-  mean((xti - mean(xti))**2)
+  sigma_est_t <- sigma_estim(xt_yt[, t], n)
   # On calcule avec formule donnée et on stocke dans le vecteur formulas 
   res <- (a_est_t - a0)/sqrt((sigma_est_t/n)*(1+((mean(xti)**2)/s2xt)))
   formulas <- c(formulas, res)
@@ -582,14 +586,81 @@ curve(dt(x, df=n-2), col="red", add=TRUE)
     vecteur de longueur $2$ contenant la borne inférieure et la borne
     supérieure.
 
+```{r,echo=TRUE,include=TRUE}
+gen_IC_a <- function (xy, n, niveauconfiance) {
+  x <- unlist(xy[1])
+  y <- unlist(xy[2])
+  alpha <- 1 - niveauconfiance
+  loi_student <- dt(x, df=n-2)
+  q <- quantile(loi_student, probs = c(1-alpha/2))
+  quantiles <- c(-q, q)
+  sigma_est <- sigma_estim(xy, n)
+  a_est <- a_estim(xy, n)
+  b_est <- b_estim(xy, n)
+  s2x <- mean((y - mean(y))*(x - mean(x)))/b_est
+  a_IC <- a_est + quantiles*sqrt((sigma_est/n)*(1+((mean(x)**2)/s2x)))
+  return(unname(a_IC))
+}
+gen_IC_b <- function (xy, n, niveauconfiance) {
+  x <- unlist(xy[1])
+  y <- unlist(xy[2])
+  alpha <- 1 - niveauconfiance
+  loi_student <- dt(x, df=n-2)
+  q <- quantile(loi_student, probs = c(1-alpha/2))
+  quantiles <- c(-q, q)
+  sigma_est <- sigma_estim(xy, n)
+  b_est <- b_estim(xy, n)
+  s2x <- mean((y - mean(y))*(x - mean(x)))/b_est
+  b_IC <- b_est + quantiles*sqrt(sigma_est/(n*s2x))
+  return(unname(b_IC))
+}
+# A revoir car la formule du Chi2 n'est pas bonne
+gen_IC_s <- function (xy, n, niveauconfiance) {
+  x <- unlist(xy[1])
+  y <- unlist(xy[2])
+  alpha <- 1 - niveauconfiance
+  sigma_est <- sigma_estim(xy, n)
+  loi_chi2 <- dchisq(x, df=n-2)
+  quantiles <- quantile(loi_chi2, probs=c(1-(alpha/2), alpha/2))
+  s_IC <- ((n-2)*sigma_est)/quantiles
+  return(unname(s_IC))
+}
+```
+
 -   [(Q12)]{style="color:red"} En utilisant la fonction "replicate",
     créer $100$ intervalles de confiance pour $a$, $b$ et $\sigma^2$.
+
+```{r,echo=TRUE,include=TRUE}
+xt_yt <- replicate(100, gen_couple_xy(n))
+a_IC_100 <- matrix(nrow=100, ncol=2)
+b_IC_100 <- matrix(nrow=100, ncol=2)
+s_IC_100 <- matrix(nrow=100, ncol=2)
+for (t in 1:100) {
+  xy <- xt_yt[,t]
+  a_IC_100[t,] <- gen_IC_a(xy, n, 1/t)
+  b_IC_100[t,] <- gen_IC_b(xy, n, 1/t)
+  s_IC_100[t,] <- gen_IC_s(xy, n, 1/t)
+}
+```
 
 -   [(Q13)]{style="color:red"} Pour visualiser les intervalles de
     confiance, la fonction `plot_ICs` est disponible dans le fichier
     `utils.R` à télécharger sous moodle et à sourcer par la commande
     `source("Utils.R")`. Visualiser les intervalles de confiance de la
     question (Q12) et commenter les.
+
+```{r,echo=TRUE,include=TRUE}
+source("Utils.R")
+plot_ICs(a_IC_100, a0)
+```
+
+```{r,echo=TRUE,include=TRUE}
+plot_ICs(b_IC_100, b0)
+```
+
+```{r,echo=TRUE,include=TRUE}
+#plot_ICs(s_IC_100, s0)
+```
 
 # Homoscédasticité, indépendance et normalité des résidus
 
