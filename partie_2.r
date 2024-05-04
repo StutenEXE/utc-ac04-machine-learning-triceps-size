@@ -124,45 +124,43 @@ for (t in 1:150) {
 hist(formulas, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
 curve(dt(x, df=n-2), col="red", add=TRUE)
 
-## Q11 - Trouver pourquoi Chi2 ne marche pas
+## Q11
 gen_IC_a <- function (xy, n, niveauconfiance) {
   x <- unlist(xy[1])
   y <- unlist(xy[2])
   alpha <- 1 - niveauconfiance
-  loi_student <- dt(x, df=n-2)
-  q <- quantile(loi_student, probs = c(1-alpha/2))
+  q <-  qt(1-alpha/2, df=n-2)
   quantiles <- c(-q, q)
   sigma_est <- sigma_estim(xy, n)
   a_est <- a_estim(xy, n)
   b_est <- b_estim(xy, n)
   s2x <- mean((y - mean(y))*(x - mean(x)))/b_est
   a_IC <- a_est + quantiles*sqrt((sigma_est/n)*(1+((mean(x)**2)/s2x)))
-  return(unname(a_IC))
+  return(a_IC)
 }
 gen_IC_b <- function (xy, n, niveauconfiance) {
   x <- unlist(xy[1])
   y <- unlist(xy[2])
   alpha <- 1 - niveauconfiance
-  loi_student <- dt(x, df=n-2)
-  q <- quantile(loi_student, probs = c(1-alpha/2))
+  q <- qt(1-alpha/2, df=n-2)
   quantiles <- c(-q, q)
   sigma_est <- sigma_estim(xy, n)
   b_est <- b_estim(xy, n)
   s2x <- mean((y - mean(y))*(x - mean(x)))/b_est
   b_IC <- b_est + quantiles*sqrt(sigma_est/(n*s2x))
-  return(unname(b_IC))
+  return(b_IC)
 }
-# A revoir car la formule du Chi2 n'est pas bonne
-gen_IC_s <- function (xy, n, niveauconfiance) {
+gen_IC_s <- function(xy, n, niveauconfiance) {
   x <- unlist(xy[1])
   y <- unlist(xy[2])
   alpha <- 1 - niveauconfiance
-  sigma_est <- sigma_estim(xy, n)
-  loi_chi2 <- dchisq(x, df=n-2)
-  quantiles <- quantile(loi_chi2, probs=c(1-(alpha/2), alpha/2))
-  s_IC <- ((n-2)*sigma_est)/quantiles
-  return(unname(s_IC))
+  chi2_quantiles <- c(qchisq(1 - alpha/2, df = n-2), qchisq(alpha/2, df = n-2))
+  # On ne devrait pas avoir de carré ici mais on en a un et ca marche ???
+  sigma_est <- sigma_estim(xy, n)^2
+  s_IC <- sqrt((n-2) * sigma_est / chi2_quantiles)
+  return(s_IC)
 }
+
 
 ## Q12
 xt_yt <- replicate(100, gen_couple_xy(n))
@@ -171,12 +169,12 @@ b_IC_100 <- matrix(nrow=100, ncol=2)
 s_IC_100 <- matrix(nrow=100, ncol=2)
 for (t in 1:100) {
   xy <- xt_yt[,t]
-  a_IC_100[t,] <- gen_IC_a(xy, n, 1/t)
-  b_IC_100[t,] <- gen_IC_b(xy, n, 1/t)
-  s_IC_100[t,] <- gen_IC_s(xy, n, 1/t)
+  a_IC_100[t,] <- gen_IC_a(xy, n, 1/(t+1))
+  b_IC_100[t,] <- gen_IC_b(xy, n, 1/(t+1))
+  s_IC_100[t,] <- gen_IC_s(xy, n, 1/(t+1))
 }
 
-## Q13
+## Q13 - Tout est tres variable ???
 source("Utils.R")
 plot_ICs(a_IC_100, a0)
 plot_ICs(b_IC_100, b0)
