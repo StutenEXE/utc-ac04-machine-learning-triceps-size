@@ -1,5 +1,8 @@
-# Q14
-anscombe <- read.csv('Jeux_Donnees/anscombe.csv')
+# Projet AC04
+
+library(lmtest)
+
+anscombe <- read.csv("/Users/valentintessier/Desktop/AC04/anscombe.csv")
 
 plot(anscombe$X1, anscombe$Y1)
 plot(anscombe$X2, anscombe$Y2)
@@ -12,71 +15,134 @@ reg<-lm(anscombe$Y1~anscombe$X1)
 summary(reg)
 plot(anscombe$X1, anscombe$Y1)
 abline(reg)
-reg$coefficient # a=3 et b=0.5 (environ)
+reg$coefficient # a=3 et b=0.5 (environ) et un R carré de 0,66
 
 reg2<-lm(anscombe$Y2~anscombe$X2)
 summary(reg2)
 plot(anscombe$X2, anscombe$Y2)
 abline(reg2)
-reg2$coefficient
+reg2$coefficient # a=3 et b=0.5 (environ) et un R carré de 0,66
 
 reg3<-lm(anscombe$Y3~anscombe$X3)
 summary(reg3)
 plot(anscombe$X3, anscombe$Y3)
 abline(reg3)
-reg3$coefficient
+reg3$coefficient  # a=3 et b=0.5 (environ) et un R carré de 0,66
 
 reg4<-lm(anscombe$Y4~anscombe$X4)
 summary(reg4)
 plot(anscombe$X4, anscombe$Y4)
 abline(reg4)
-reg4$coefficient
+reg4$coefficient  # a=3 et b=0.5 (environ) et un R carré de 0,66
 
 # Droites de régressions linéaires ont les mêmes équations et les coeffs r² sont quasiment les mêmes au millième près
 
 # Q16
-rstandard(reg)
-fitted.values(reg)
-plot(fitted.values(reg), rstandard(reg))
-# Nous n'observons pas de variation dans la dispersion. -> homoscédasticité validée
+reg1 <- lm(anscombe$Y1~anscombe$X1)
 
-qqnorm(rstandard(reg))
-qqline(rstandard(reg))
-hist(rstandard(reg), breaks=5)
-lines(density(rstandard(reg)))
+# Analyse de la normalité
+residuals1 <- residuals(reg1)
+qqnorm(residuals1)
+qqline(residuals1)
+# Histogramme des résidus corrigés
+hist(residuals1, main="Histogramme des résidus", xlab="Résidus")
+curve(dnorm(x, mean=mean(residuals1), sd=sd(residuals1)), add=TRUE, col="blue")
+shapiro.test(residuals1)    # p-value > 0,05 donc hypothèse de normalité validée
 
-qqnorm(rstandard(reg2))
-fitted.values(reg2)
-plot(anscombe[['X2']], rstandard(reg2))
-# pareil mais avec les fonctions demandées dans l'énoncée :
-plot(fitted.values(reg2), rstandard(reg2))
-# Nous observons une variation dans la dispersion en fonction de x -> homoscédasticité invalide
 
-qqnorm(rstandard(reg3))
-plot(anscombe[['X3']], rstandard(reg3))
-# pareil mais avec les fonctions demandées dans l'énoncée :
-plot(fitted.values(reg3), rstandard(reg3))
-# Nous observons une variation dans la dispersion en fonction de x -> homoscédasticité invalide
+# Analyser l'homoscédasticité
+# Résidus standardisés en fonction des valeurs prédites
+residuals_standardized1 <- rstandard(reg1)
+plot(fitted.values(reg1), residuals_standardized1, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
+abline(lm(residuals_standardized1 ~ fitted(reg1)), col="red")
+bptest(reg1)
+plot(reg1, which = 3)
+# On voit que la dispersion est constante, que la ligne de tendance est à 0 donc la variance des residus est contante 
+# Hypothèse d'homocédacité vérifiée
 
-qqnorm(rstandard(reg4))
-plot(anscombe[['X4']], rstandard(reg4))
-# pareil mais avec les fonctions demandées dans l'énoncée :
-plot(fitted.values(reg4), rstandard(reg4))
-# Nous n'observons pas de variation dans la dispersion. -> homoscédasticité validée
+# Analyser la linéarité 
+plot(reg1, which = 1)
+plot(fitted(reg1), residuals1)
+resettest(reg1)
 
 
 
+reg2 <- lm(anscombe$Y2~anscombe$X2)
 
-# tests Julie - brouillon :
-test <- lm(anscombe$Y1~anscombe$X1)
-test
-test1 <- lm(Y1~1+X1, data=anscombe)
-test1
-hatvalues(test1)
-plot(anscombe[['X1']], hatvalues(test1))
+# Analyse de la normalité
+residuals2 <- residuals(reg2)
+qqnorm(residuals2)
+qqline(residuals2)
+# Histogramme des résidus corrigés
+hist(residuals2, main="Histogramme des résidus", xlab="Résidus")
+curve(dnorm(x, mean=mean(residuals2), sd=sd(residuals2)), add=TRUE, col="blue")
+shapiro.test(residuals2)   # p-value > 0,05 donc hypothèse de normalité validée mais moins évident 
+
+# Analyser l'homoscédasticité
+# Résidus standardisés en fonction des valeurs prédites
+residuals_standardized2 <- rstandard(reg2)
+plot(fitted.values(reg2), residuals_standardized2, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
+abline(lm(residuals_standardized2 ~ fitted(reg2)), col="red")
+bptest(reg2)
+plot(reg2, which = 3)
+# On voit que la dispersion est constante, que la ligne de tendance est à 0 donc la variance des residus est contante 
+# Hypothèse d'homocédastité non vérifiée
+
+# Analyser la linéarité 
+plot(reg2, which = 1)
+plot(fitted(reg2), residuals2)
+resettest(reg2)
 
 
-qqnorm(rstandard(reg))
-qqline(rstandard(reg))
+reg3 <- lm(anscombe$Y3~anscombe$X3)
 
-plot(anscombe[['X1']], rstandard(reg))
+# Analyse de la normalité
+residuals3 <- residuals(reg3)
+qqnorm(residuals3)
+qqline(residuals3)
+# Histogramme des résidus corrigés
+hist(residuals3, main="Histogramme des résidus", xlab="Résidus")
+curve(dnorm(x, mean=mean(residuals3), sd=sd(residuals3)), add=TRUE, col="blue")
+shapiro.test(residuals3)  # p-value < 0,05 donc hypothèse de normalité non validée 
+
+# Analyser l'homoscédasticité
+# Résidus standardisés en fonction des valeurs prédites
+residuals_standardized3 <- rstandard(reg3)
+plot(fitted.values(reg3), residuals_standardized3, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
+abline(lm(residuals_standardized3 ~ fitted(reg3)), col="red")
+bptest(reg3)
+plot(reg3, which = 3)
+# On voit que la dispersion est constante, que la ligne de tendance est à 0 donc la variance des residus est contante 
+# Hypothèse d'homocédacité non vérifiée
+
+# Analyser la linéarité 
+plot(reg3, which = 1)
+plot(fitted(reg3), residuals3)
+resettest(reg3)
+
+reg4 <- lm(anscombe$Y4~anscombe$X4)
+
+# Analyse de la normalité
+residuals4 <- residuals(reg4)
+qqnorm(residuals4)
+qqline(residuals4)
+# Histogramme des résidus corrigés
+hist(residuals4, main="Histogramme des résidus", xlab="Résidus")
+curve(dnorm(x, mean=mean(residuals4), sd=sd(residuals4)), add=TRUE, col="blue")
+shapiro.test(residuals4)   # p-value > 0,05 donc hypothèse de normalité validée  
+
+# Analyser l'homoscédasticité
+# Résidus standardisés en fonction des valeurs prédites
+residuals_standardized4 <- rstandard(reg4)
+plot(fitted.values(reg4), sqrt(residuals_standardized4), main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
+abline(lm(sqrt(residuals_standardized4) ~ fitted(reg4)), col="red")
+bptest(reg4)
+# On voit que la dispersion est constante, que la ligne de tendance est à 0 donc la variance des residus est contante 
+# Hypothèse d'homocédacité non vérifiée
+
+# Analyser la linéarité 
+plot(reg4, which = 1)
+plot(fitted(reg4), residuals4)
+resettest(reg4)
+
+
