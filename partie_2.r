@@ -18,7 +18,7 @@ x <- runif(n, 0, 5)
 generate_y <- function(x, a, b, s) {
   v <- c()
   for(xi in x) {
-    v <- c(v, rnorm(1, a + xi*b, s))
+    v <- c(v, rnorm(1, a + xi*b, sqrt(s)))
   }
   return(v)
 }
@@ -50,8 +50,8 @@ sigma_estim <- function(xy, n) {
   a_est <- a_estim(xy, n)
   b_est <- b_estim(xy, n)
   # Erreur dans le sujet ? pas de sqrt ici normalement mais sans les résultats ne sont plus cohérents
-  return(sqrt(mean((y - a_est - b_est*x)**2)))
-  #return(mean((y - a_est - b_est*x)**2))
+  #return(sqrt(mean((y - a_est - b_est*x)**2)))
+  return(mean((y - a_est - b_est*x)**2))
 }
 
 ## Q4
@@ -60,6 +60,10 @@ xy <- list(x,y)
 a_est <- a_estim(xy, n)
 b_est <- b_estim(xy, n)
 sigma_est <- sigma_estim(xy, n)
+
+# DEMO PROF
+s_nous <- sigma_estim(xy, n)
+s_vous <- sigma_estim(xy, n)**2
 
 ## Q5
 plot(x, y, col="blue")
