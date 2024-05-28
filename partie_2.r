@@ -129,37 +129,44 @@ hist(formulas, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
 curve(dt(x, df=n-2), col="red", add=TRUE)
 
 ## Q11
-gen_IC_a <- function (xy, n, niveauconfiance) {
+#gen_IC_a <- function (xy, n, niveauconfiance) {
+#  x <- unlist(xy[1])
+# y <- unlist(xy[2])
+# alpha <- 1 - niveauconfiance
+# q <-  qt(1-alpha/2, df=n-2)
+# quantiles <- c(-q, q)
+# sigma_est <- sigma_estim(xy, n)
+# a_est <- a_estim(xy, n)
+# b_est <- b_estim(xy, n)
+# s2x <- mean((y - mean(y))*(x - mean(x)))/b_est
+# a_IC <- a_est + quantiles*sqrt((sigma_est/n)*(1+((mean(x)**2)/s2x)))
+#  return(a_IC)
+#}
+gen_IC_a <- function(xy, alpha) {
   x <- unlist(xy[1])
   y <- unlist(xy[2])
-  alpha <- 1 - niveauconfiance
-  q <-  qt(1-alpha/2, df=n-2)
-  quantiles <- c(-q, q)
-  sigma_est <- sigma_estim(xy, n)
+  n <- length(x)
   a_est <- a_estim(xy, n)
   b_est <- b_estim(xy, n)
   s2x <- mean((y - mean(y))*(x - mean(x)))/b_est
-  a_IC <- a_est + quantiles*sqrt((sigma_est/n)*(1+((mean(x)**2)/s2x)))
+  a_IC <- a_est + c(-1,1) * qt(1 - (alpha/2), df=n-2) * sqrt((sigma_est/n) * (1+((mean(x)**2)/s2x))) 
   return(a_IC)
 }
-gen_IC_b <- function (xy, n, niveauconfiance) {
+gen_IC_b <- function (xy, alpha) {
   x <- unlist(xy[1])
   y <- unlist(xy[2])
-  alpha <- 1 - niveauconfiance
-  q <- qt(1-alpha/2, df=n-2)
-  quantiles <- c(-q, q)
+  n <- length(x)
   sigma_est <- sigma_estim(xy, n)
   b_est <- b_estim(xy, n)
   s2x <- mean((y - mean(y))*(x - mean(x)))/b_est
-  b_IC <- b_est + quantiles*sqrt(sigma_est/(n*s2x))
+  b_IC <- b_est + c(-1, 1) * qt(1 - (alpha/2), df=n-2) * sqrt(sigma_est/(n*s2x))
   return(b_IC)
 }
-gen_IC_s <- function(xy, n, niveauconfiance) {
+gen_IC_s <- function(xy, alpha) {
   x <- unlist(xy[1])
   y <- unlist(xy[2])
-  alpha <- 1 - niveauconfiance
+  n <- length(x)
   chi2_quantiles <- c(qchisq(1 - alpha/2, df = n-2), qchisq(alpha/2, df = n-2))
-  # On ne devrait pas avoir de carré ici mais on en a un et ca marche ???
   sigma_est <- sigma_estim(xy, n)^2
   s_IC <- sqrt((n-2) * sigma_est / chi2_quantiles)
   return(s_IC)
@@ -167,18 +174,13 @@ gen_IC_s <- function(xy, n, niveauconfiance) {
 
 
 ## Q12
-xt_yt <- replicate(100, gen_couple_xy(n))
-a_IC_100 <- matrix(nrow=100, ncol=2)
-b_IC_100 <- matrix(nrow=100, ncol=2)
-s_IC_100 <- matrix(nrow=100, ncol=2)
-for (t in 1:100) {
-  xy <- xt_yt[,t]
-  a_IC_100[t,] <- gen_IC_a(xy, n, 1/(t+1))
-  b_IC_100[t,] <- gen_IC_b(xy, n, 1/(t+1))
-  s_IC_100[t,] <- gen_IC_s(xy, n, 1/(t+1))
-}
+alpha <- 0.05
+n <- 1000
+a_IC_100 <- replicate(n, gen_IC_a(gen_couple_xy(100), alpha))
+b_IC_100 <- replicate(n, gen_IC_b(gen_couple_xy(100), alpha))
+s_IC_100 <- replicate(n, gen_IC_s(gen_couple_xy(100), alpha))
 
-## Q13 - Tout est tres variable ???
+## Q13
 source("Utils.R")
 plot_ICs(a_IC_100, a0)
 plot_ICs(b_IC_100, b0)
