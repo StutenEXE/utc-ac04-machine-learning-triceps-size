@@ -1,5 +1,3 @@
-# Auteurs  : Chloé Lezaire & Alexandre Bidaux
-
 # Scripts de la partie 2
 
 ## Setup 
@@ -49,8 +47,6 @@ sigma_estim <- function(xy, n) {
   y <- xy[[2]]
   a_est <- a_estim(xy, n)
   b_est <- b_estim(xy, n)
-  # Erreur dans le sujet ? pas de sqrt ici normalement mais sans les résultats ne sont plus cohérents
-  #return(sqrt(mean((y - a_est - b_est*x)**2)))
   return(mean((y - a_est - b_est*x)**2))
 }
 
@@ -172,4 +168,5 @@ source("Utils.R")
 plot_ICs(a_IC_100, a0)
 plot_ICs(b_IC_100, b0)
 plot_ICs(s_IC_100, s0)
+# hit <- s_IC_100[1, ] < s0 & s_IC_100[2, ] > s0
 

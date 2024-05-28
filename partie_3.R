@@ -2,7 +2,7 @@
 
 library(lmtest)
 
-anscombe <- read.csv("/Users/valentintessier/Desktop/AC04/anscombe.csv")
+anscombe <- read.csv("./Jeux_Donnees/anscombe.csv")
 
 plot(anscombe$X1, anscombe$Y1)
 plot(anscombe$X2, anscombe$Y2)
@@ -45,7 +45,7 @@ residuals1 <- residuals(reg1)
 qqnorm(residuals1)
 qqline(residuals1)
 # Histogramme des résidus corrigés
-hist(residuals1, main="Histogramme des résidus", xlab="Résidus")
+hist(residuals1, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
 curve(dnorm(x, mean=mean(residuals1), sd=sd(residuals1)), add=TRUE, col="blue")
 shapiro.test(residuals1)    # p-value > 0,05 donc hypothèse de normalité validée
 
@@ -74,7 +74,7 @@ residuals2 <- residuals(reg2)
 qqnorm(residuals2)
 qqline(residuals2)
 # Histogramme des résidus corrigés
-hist(residuals2, main="Histogramme des résidus", xlab="Résidus")
+hist(residuals2, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
 curve(dnorm(x, mean=mean(residuals2), sd=sd(residuals2)), add=TRUE, col="blue")
 shapiro.test(residuals2)   # p-value > 0,05 donc hypothèse de normalité validée mais moins évident 
 
@@ -101,7 +101,7 @@ residuals3 <- residuals(reg3)
 qqnorm(residuals3)
 qqline(residuals3)
 # Histogramme des résidus corrigés
-hist(residuals3, main="Histogramme des résidus", xlab="Résidus")
+hist(residuals3, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
 curve(dnorm(x, mean=mean(residuals3), sd=sd(residuals3)), add=TRUE, col="blue")
 shapiro.test(residuals3)  # p-value < 0,05 donc hypothèse de normalité non validée 
 
@@ -127,7 +127,7 @@ residuals4 <- residuals(reg4)
 qqnorm(residuals4)
 qqline(residuals4)
 # Histogramme des résidus corrigés
-hist(residuals4, main="Histogramme des résidus", xlab="Résidus")
+hist(residuals4, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
 curve(dnorm(x, mean=mean(residuals4), sd=sd(residuals4)), add=TRUE, col="blue")
 shapiro.test(residuals4)   # p-value > 0,05 donc hypothèse de normalité validée  
 
