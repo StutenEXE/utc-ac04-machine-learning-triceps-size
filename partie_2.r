@@ -129,19 +129,6 @@ hist(formulas, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
 curve(dt(x, df=n-2), col="red", add=TRUE)
 
 ## Q11
-#gen_IC_a <- function (xy, n, niveauconfiance) {
-#  x <- unlist(xy[1])
-# y <- unlist(xy[2])
-# alpha <- 1 - niveauconfiance
-# q <-  qt(1-alpha/2, df=n-2)
-# quantiles <- c(-q, q)
-# sigma_est <- sigma_estim(xy, n)
-# a_est <- a_estim(xy, n)
-# b_est <- b_estim(xy, n)
-# s2x <- mean((y - mean(y))*(x - mean(x)))/b_est
-# a_IC <- a_est + quantiles*sqrt((sigma_est/n)*(1+((mean(x)**2)/s2x)))
-#  return(a_IC)
-#}
 gen_IC_a <- function(xy, alpha) {
   x <- unlist(xy[1])
   y <- unlist(xy[2])
