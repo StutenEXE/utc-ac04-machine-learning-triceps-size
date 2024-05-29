@@ -57,10 +57,6 @@ a_est <- a_estim(xy, n)
 b_est <- b_estim(xy, n)
 sigma_est <- sigma_estim(xy, n)
 
-# DEMO PROF
-s_nous <- sigma_estim(xy, n)
-s_vous <- sigma_estim(xy, n)**2
-
 ## Q5
 plot(x, y, col="blue")
 lines(x, a0 + x*b0, add=TRUE, col="red")
@@ -150,8 +146,8 @@ gen_IC_s <- function(xy, alpha) {
   y <- unlist(xy[2])
   n <- length(x)
   chi2_quantiles <- c(qchisq(1 - alpha/2, df = n-2), qchisq(alpha/2, df = n-2))
-  sigma_est <- sigma_estim(xy, n)^2
-  s_IC <- sqrt((n-2) * sigma_est / chi2_quantiles)
+  sigma_est <- sigma_estim(xy, n)
+  s_IC <- ((n-2) * sigma_est) / chi2_quantiles
   return(s_IC)
 }
 
@@ -168,5 +164,7 @@ source("Utils.R")
 plot_ICs(a_IC_100, a0)
 plot_ICs(b_IC_100, b0)
 plot_ICs(s_IC_100, s0)
-# hit <- s_IC_100[1, ] < s0 & s_IC_100[2, ] > s0
+
+hit <- s_IC_100[1, ] < s0 & s_IC_100[2, ] > s0
+sum(hit)/length(hit)
 

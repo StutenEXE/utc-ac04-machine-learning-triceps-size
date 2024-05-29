@@ -610,8 +610,8 @@ gen_IC_s <- function(xy, alpha) {
   y <- unlist(xy[2])
   n <- length(x)
   chi2_quantiles <- c(qchisq(1 - alpha/2, df = n-2), qchisq(alpha/2, df = n-2))
-  sigma_est <- sigma_estim(xy, n)^2
-  s_IC <- sqrt((n-2) * sigma_est / chi2_quantiles)
+  sigma_est <- sigma_estim(xy, n)
+  s_IC <- ((n-2) * sigma_est) / chi2_quantiles
   return(s_IC)
 }
 ```
