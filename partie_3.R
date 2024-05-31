@@ -1,44 +1,44 @@
 # Projet AC04
 
 library(lmtest)
+data(anscombe)
+ans <- read.csv("./Jeux_Donnees/anscombe.csv")
 
-anscombe <- read.csv("./Jeux_Donnees/anscombe.csv")
-
-plot(anscombe$X1, anscombe$Y1)
-plot(anscombe$X2, anscombe$Y2)
-plot(anscombe$X3, anscombe$Y3)
-plot(anscombe$X4, anscombe$Y4)
+plot(anscombe$x1, anscombe$y1)
+plot(anscombe$x2, anscombe$y2)
+plot(anscombe$x3, anscombe$y3)
+plot(anscombe$x4, anscombe$y4)
 
 #Q15
 
-reg<-lm(anscombe$Y1~anscombe$X1)
-summary(reg)
-plot(anscombe$X1, anscombe$Y1)
-abline(reg)
+reg1<-lm(anscombe$y1~anscombe$x1)
+summary(reg1)
+plot(anscombe$x1, anscombe$y1)
+abline(reg1)
 reg$coefficient # a=3 et b=0.5 (environ) et un R carré de 0,66
 
-reg2<-lm(anscombe$Y2~anscombe$X2)
+reg2<-lm(anscombe$y2~anscombe$x2)
 summary(reg2)
-plot(anscombe$X2, anscombe$Y2)
+plot(anscombe$x2, anscombe$y2)
 abline(reg2)
 reg2$coefficient # a=3 et b=0.5 (environ) et un R carré de 0,66
 
-reg3<-lm(anscombe$Y3~anscombe$X3)
+reg3<-lm(anscombe$y3~anscombe$x3)
 summary(reg3)
-plot(anscombe$X3, anscombe$Y3)
+plot(anscombe$x3, anscombe$y3)
 abline(reg3)
 reg3$coefficient  # a=3 et b=0.5 (environ) et un R carré de 0,66
 
-reg4<-lm(anscombe$Y4~anscombe$X4)
+reg4<-lm(anscombe$y4~anscombe$x4)
 summary(reg4)
-plot(anscombe$X4, anscombe$Y4)
+plot(anscombe$x4, anscombe$y4)
 abline(reg4)
 reg4$coefficient  # a=3 et b=0.5 (environ) et un R carré de 0,66
 
 # Droites de régressions linéaires ont les mêmes équations et les coeffs r² sont quasiment les mêmes au millième près
 
 # Q16
-reg1 <- lm(anscombe$Y1~anscombe$X1)
+reg1
 
 # Analyse de la normalité
 residuals1 <- residuals(reg1)
@@ -67,7 +67,7 @@ resettest(reg1)
 
 
 
-reg2 <- lm(anscombe$Y2~anscombe$X2)
+reg2
 
 # Analyse de la normalité
 residuals2 <- residuals(reg2)
@@ -94,7 +94,7 @@ plot(fitted(reg2), residuals2)
 resettest(reg2)
 
 
-reg3 <- lm(anscombe$Y3~anscombe$X3)
+reg3
 
 # Analyse de la normalité
 residuals3 <- residuals(reg3)
@@ -120,7 +120,7 @@ plot(reg3, which = 1)
 plot(fitted(reg3), residuals3)
 resettest(reg3)
 
-reg4 <- lm(anscombe$Y4~anscombe$X4)
+reg4
 
 # Analyse de la normalité
 residuals4 <- residuals(reg4)
