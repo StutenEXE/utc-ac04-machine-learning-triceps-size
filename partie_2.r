@@ -127,6 +127,7 @@ gen_IC_a <- function(xy, alpha) {
   n <- length(x)
   a_est <- a_estim(xy, n)
   b_est <- b_estim(xy, n)
+  sigma_est <- sigma_estim(xy, n)
   s2x <- mean((y - mean(y))*(x - mean(x)))/b_est
   a_IC <- a_est + c(-1,1) * qt(1 - (alpha/2), df=n-2) * sqrt((sigma_est/n) * (1+((mean(x)**2)/s2x))) 
   return(a_IC)
@@ -165,6 +166,6 @@ plot_ICs(a_IC_100, a0)
 plot_ICs(b_IC_100, b0)
 plot_ICs(s_IC_100, s0)
 
-hit <- s_IC_100[1, ] < s0 & s_IC_100[2, ] > s0
+hit <- a_IC_100[1, ] < a0 & a_IC_100[2, ] > a0
 sum(hit)/length(hit)
 

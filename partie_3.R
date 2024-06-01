@@ -57,7 +57,7 @@ plot(fitted.values(reg1), residuals_standardized1, main="Homoscédasticité", xl
 abline(lm(residuals_standardized1 ~ fitted(reg1)), col="red")
 bptest(reg1)
 plot(reg1, which = 3)
-# On voit que la dispersion est constante, que la ligne de tendance est à 0 donc la variance des residus est contante 
+# On voit que la dispersion est constante, que la ligne de tendance est à 0 donc la variance des residus est constante 
 # Hypothèse d'homocédacité vérifiée
 
 # Analyser la linéarité 
