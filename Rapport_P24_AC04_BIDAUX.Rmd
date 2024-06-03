@@ -945,7 +945,8 @@ resettest(reg4)
         demandez l'avis au responsable de l'uv avant de traiter la
         suite.
 
--   Charger le jeu de données `Real_Data`
+    -   Charger le jeu de données `Real_Data`
+    
 
 ## Quelques éléments de statistique descriptive
 
@@ -955,6 +956,38 @@ resettest(reg4)
     linéaire parait judicieux (représentation graphique, coefficient de
     corrélation,..., ..)
 
+[Nous choisissons d'utiliser le jeu de données `bodyfat.dat`, en particulier les colonnes `fat`et `triceps`. Ayant quelques soucis lors de l'utilisation du fichier en format `.dat` nous l'avons converti en `.csv` à l'aide d'un script python.]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
+bodyfat <- read.csv('Jeux_Donnees/bodyfat.csv')
+```
+
+```{r, echo=TRUE, include=TRUE}
+plot(bodyfat$Fat, bodyfat$Triceps)
+reg<-lm(bodyfat$Triceps~bodyfat$Fat)
+```
+
+```{r, echo=TRUE, include=TRUE}
+summary(reg)
+```
+
+[Ici, le R^2 est à 0.7111 > 0.6 donc les données sont corrélées. 71% des valeurs de la colonne `fat` sont expliéquées par les valeurs de `triceps`. (à vérifier)]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
+plot(bodyfat$Fat, bodyfat$Triceps)
+abline(reg)
+```
+[Nous observons un bonne corrélation des variables autour de la droite de régression.]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
+reg$coefficient
+```
+
+```{r, echo=TRUE, include=TRUE}
+Real_Data <- read.csv('Jeux_Donnees/bodyfat.csv')
+
+```
+
 ## Estimation ponctuelle et par IC des paramètres
 
 -   [(Q18)]{style="color:red"} Estimer les paramètres du modèle de
@@ -962,22 +995,67 @@ resettest(reg4)
     droite des moindres carrés et discuter de la pertinence de votre
     choix de modèle.
 
+```{r, echo=TRUE, include=TRUE}
+x <- Real_Data$Fat
+y <- Real_Data$Triceps
+plot(x, y)
+n <- length(x)
+xy <- data.frame(x, y)
+a_est <- a_estim(xy, n)
+b_est <- b_estim(xy, n)
+y_ests <- a_est + b_est*x
+lines(x, y_ests, col="green")
+regression <- lm(y~x)
+abline(regression, col="red")
+
+```
+
+[On retrouve la corrélation trouvée plus tôt.]{style="color:blue"}
+
 -   [(Q19)]{style="color:red"} A l'aide de la fonction `confint`,
     déterminer un estimation par intervalle de confiance des paramètres
     de la droite de régression.
+
+```{r, echo=TRUE, include=TRUE}
+confint(regression, level=0.95) # avec un intervalle de confiance à 95%
+
+```
 
 ## Qualité de l'ajustement
 
 -   [(Q20)]{style="color:red"} Déterminer le coefficient $R^2$ de la
     régression linéaire sur votre jeu de données; qu'en pensez-vous ?
+    
+```{r, echo=TRUE, include=TRUE}
+R.squared <- summary(regression)$r.squared 
+
+```
+
+[R^2 > 0.6, c'est bien.]{style="color:blue"}
 
 -   [(Q21)]{style="color:red"} Vérifier que
     $R^2= \displaystyle{\frac{s^2_{xy}}{s_x^2s_y^2}}=(\text{ corrélation empirique entre } x \text{ et } y)^2$.
+    
+```{r, echo=TRUE, include=TRUE}
+S.2.xy <- (mean(x*y)-mean(x)*mean(y))**2
+S.2.x <- mean((x - mean(x))**2)
+S.2.y <- mean((y - mean(y))**2)
+S.2.xy/(S.2.x * S.2.y)
+R.squared
+
+```
+
+[Les deux sont égaux. Notre régression explique la plupart de la variance de la variable dépendante.]{style="color:blue"}
 
 -   [(Q22)]{style="color:red"} Tester si le coefficient de la pente est
     nul, c-à-d, tester $H_0 : \; b=0$ contre $H_1 \;:$ le complémentaire
     de $H_0$. Ce problème de test est une des démarches statistiques
     possibles pour valider le modèle de régression linéaire.
+
+```{r, echo=TRUE, include=TRUE}
+regression$coefficients[2]
+```
+[b = 0.8295705 donc != 0]{style="color:blue"}
 
 *Indication* : On pourra utiliser la fonction pivotale pour $b$ (cf
 section I.3 de ce document et/ou Proposition 7.6 du poly CM) ou bien
@@ -989,10 +1067,26 @@ fonction "lm".
 -   [(Q23)]{style="color:red"} Evaluer visuellement la normalité des
     résidus corrigés à l'aide d'un diagramme quantile--quantile
     (fonctions "qqnorm" et "qqline").
+    
+```{r, echo=TRUE, include=TRUE}
+residuals <- residuals(regression)
+qqnorm(residuals)
+qqline(residuals)
+```
+
+[La plupart des quantiles théoriques en fonction des quantiles observés appartiennent à la droite qqline ]{style="color:blue"}
 
 -   [(Q24)]{style="color:red"} Evaluer visuellement l'indépendance des
     résidus corrigés et l'hypothèse d'homoscédasticité à l'aide du
     graphe des résidus corrigés versus la variable explicative.
+
+```{r, echo=TRUE, include=TRUE} 
+residuals_standardized <- rstandard(regression)
+plot(fitted.values(regression), residuals_standardized, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
+abline(lm(residuals_standardized ~ fitted(regression)), col="red")
+```
+
+[Nous n'observons pas beaucoup de variations dans la dispersion autour de la ligne de tendance ce qui valide l'hypothèse d'homoscédasticité. Et la ligne de tendance est à 0 donc la variance des résidus est constante.]{style="color:blue"}
 
 ## Prévision (cf Section 7.5.5, poly CM)
 
@@ -1025,6 +1119,23 @@ ponctuelle de $\mathbb{E}(Y_0)$
     pour lesquelles on déterminera un intervalle de confiance pour
     $\mathbb{E}(Y_0)$ au niveau $0.95$ et un intervalle de prédiction au
     niveau $0.95$.
+    
+```{r, echo=TRUE, include=TRUE} 
+x0.1 <- round(runif(1,11,26),1)
+x0.2 <- round(runif(1,11,26),1)
+
+# Récupération des intervalles de confiances pour a et b
+a.IC <- confint(regression, level=0.95)[1, ]
+b.IC <- confint(regression, level=0.95)[2, ]
+
+# Obtention de 2 intervalles de confiance pour E(y0.1) et E(y0.2)
+esp.yO.1_IC <- a.IC + b.IC*x0.1
+esp.y0.2_IC <- a.IC + b.IC*x0.2
+
+# Fonction pour obtenir un intervalle de prédiction de Y0
+predict(regression,data.frame(x = c(x0.1, x0.2)),interval="prediction",level = 0.95)
+
+```
 
 ## Conclusion
 
