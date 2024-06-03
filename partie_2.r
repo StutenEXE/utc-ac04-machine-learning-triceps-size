@@ -99,24 +99,20 @@ gen_couple_xy <- function(n) {
   y <- generate_y(x, a0, b0, s0)
   return(list(x,y))
 }
-n <- 200
-# Creation de 150 couples (x, y)
-xt_yt <- replicate(150, gen_couple_xy(n))
-formulas <- c()
-for (t in 1:150) {
-  xti <- unlist(xt_yt[1, t])
-  yti <- unlist(xt_yt[2, t])
-  a_est_t <- a_estim(xt_yt[, t], n)
-  # Ici on utilise b_estim mais nous ne savons pas comment l'utiliser autrement
-  s2xt <- mean((yti - mean(yti))*(xti - mean(xti)))/b_estim(xt_yt[, t], n)
-  #s2xt <-  mean((xti - mean(xti))**2)
-  sigma_est_t <- sigma_estim(xt_yt[, t], n)
+calcul_formule <- function(n) {
+  xy <- gen_couple_xy(n)
+  x <- xy[[1]]
+  y <- xy[[2]]
+  a_est <- a_estim(xy, n)
+  s2xt <- mean((y - mean(y))*(x - mean(x)))/b_estim(xy, n)
+  #s2xt <-  mean((x - mean(x))**2)
+  sigma_est <- sigma_estim(xy, n)
   # On calcule avec formule donnée et on stocke dans le vecteur formulas 
-  res <- (a_est_t - a0)/sqrt((sigma_est_t/n)*(1+((mean(xti)**2)/s2xt)))
-  formulas <- c(formulas, res)
+  res <- (a_est - a0)/sqrt((sigma_est/n)*(1+((mean(x)**2)/s2xt)))
+  return(res)
 }
-# Comparaison de la répartition de nos formules avec la fonction de 
-# densité de la loi de Student à n-2 degrés de liberté
+n <- 200
+formulas <- replicate(150, calcul_formule(n))
 hist(formulas, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
 curve(dt(x, df=n-2), col="red", add=TRUE)
 
