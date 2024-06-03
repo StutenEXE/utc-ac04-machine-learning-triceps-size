@@ -13,6 +13,7 @@ library(lmtest)
 
 bodyfat <- read.csv('Jeux_Donnees/bodyfat.csv')
 bodyfat$Fat
+# /!\ ajouter des éléments de stats descriptives pour appuyer le choix
 
 # ======= fat - triceps =======
 plot(bodyfat$Fat, bodyfat$Triceps)
