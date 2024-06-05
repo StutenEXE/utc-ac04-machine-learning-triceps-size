@@ -133,7 +133,8 @@ prestation orale.
     -   [Alexandre BIDAUX (GI), contribution : 25 %]{style="color:blue"}
     -   [Julie CHARTIER (GI), contribution : 25 %]{style="color:blue"}
     -   [Chloé LEZAIRE (IM), contribution : 25 %]{style="color:blue"}
-    -   [Valentin TESSIER-NAJBOR (IM), contribution : 25 %]{style="color:blue"}
+    -   [Valentin TESSIER-NAJBOR (IM), contribution : 25
+        %]{style="color:blue"}
 
 # Modèle de régression linéaire simple Gaussien et estimation des paramètres
 
@@ -446,18 +447,19 @@ lines(x, y_ests, add=TRUE, col="green")
 
 -   [(Q6)]{style="color:red"} Déterminer le vecteur des résidus
     ${\hat \epsilon}_i$ et vérifier la propriété des résidus.
-    
+
 ```{r,echo=TRUE,include=TRUE}
 # e_ests est le vecteur des résidus
 e_ests <- y - y_ests
 sum(e_ests)
 ```
-[On voit que $\displaystyle{\sum_{i=1}^n {\hat \epsilon}_i\approx0}$]{style="color:blue"}
 
-    
+[On voit que
+$\displaystyle{\sum_{i=1}^n {\hat \epsilon}_i\approx0}$]{style="color:blue"}
+
 -   [(Q7)]{style="color:red"} Vérifier que $({\bar x},{\bar y})$
     appartient à la droite des moindres carrés.
-    
+
 ```{r, echo=TRUE, include=TRUE}
 plot(mean(x), mean(y), col="red", pch=4)
 lines(x, y_ests, col="black", add=TRUE)
@@ -490,7 +492,8 @@ reg <- lm(vary~varx, data = donnees)
 summary(reg)
 ```
 
-[On remarque que nous obtenons les même résultats pour $a$, $b$, $s_0$]{style="color:blue"}
+[On remarque que nous obtenons les même résultats pour $a$, $b$,
+$s_0$]{style="color:blue"}
 
 -   [(Q9)]{style="color:red"} En utilisant les fonctions `a_estim` et
     `b_estim`, illustrer graphiquement la convergence en probabilité de
@@ -510,23 +513,30 @@ for (ni in n) {
 }
 ```
 
-[On génère 1000 estimations de $a$ et $b$ pour $n$ allant de 1 à 1000]{style="color:blue"}
+[On génère 1000 estimations de $a$ et $b$ pour $n$ allant de 1 à
+1000]{style="color:blue"}
 
 ```{r,echo=TRUE,include=TRUE}
 plot(n, a_ests, col="black")
 lines(n, n*0 + a0, col="red", add=TRUE)
 ```
 
-[On trace un premier graphique de ${\hat a}$ en fonction de $n$ tout en traçant la fonction $f(x)=a=a_0$ pour montrer la convergence de $\hat a$ vers $a=a_0$]{style="color:blue"}
+[On trace un premier graphique de ${\hat a}$ en fonction de $n$ tout en
+traçant la fonction $f(x)=a=a_0$ pour montrer la convergence de $\hat a$
+vers $a=a_0$]{style="color:blue"}
 
 ```{r,echo=TRUE,include=TRUE}
 plot(n, b_ests, col="black")
 lines(n, n*0 + b0, col="red", add=TRUE)
 ```
 
-[On fait de même mais pour ${\hat b}$ afin de montrer la convergence de $\hat b$ vers $b=b_0$]{style="color:blue"}
+[On fait de même mais pour ${\hat b}$ afin de montrer la convergence de
+$\hat b$ vers $b=b_0$]{style="color:blue"}
 
-[On remarque bien sur les graphiques que ${\hat a {\overset{\mathbb{P}}{\longrightarrow}} a}$ et que ${\hat b {\overset{\mathbb{P}}{\longrightarrow}} b}$ avec $a=a_0$ et $b=b_0$]{style="color:blue"}
+[On remarque bien sur les graphiques que
+${\hat a {\overset{\mathbb{P}}{\longrightarrow}} a}$ et que
+${\hat b {\overset{\mathbb{P}}{\longrightarrow}} b}$ avec $a=a_0$ et
+$b=b_0$]{style="color:blue"}
 
 -   [(Q10)]{style="color:red"} En utilisant les fonctions `replicate`,
     `a_estim`, et `b_estim`, illustrer le fait que
@@ -536,46 +546,44 @@ lines(n, n*0 + b0, col="red", add=TRUE)
 1.  simuler $150$ réalisations de $n$ couples
     $(x_{i,t},y_{i,t})_{ 1 \leq i \leq n}$, $1\leq t\leq 150$
 
-
 2.  pour tout $t =1,\ldots,150$, déterminer ${\hat a}_t$ à partir du
     n-uplet $(x_{i,t},y_{i,t})_{ 1 \leq i \leq n}$
 
 3.  représenter sur un même graphique la densité d'une loi de Student à
     $(n-2)$ degrès de liberté ainsi que l'histogramme de
     $$(\frac{{\hat a}_t - a_0}{\displaystyle{\sqrt{\frac{{\hat \sigma}_t^2}{n} (1+\displaystyle{\frac{{\bar x}_t^2}{s_{x,t}^2}})}}})_{1\leq t \leq 150}.$$
-    
+
 ```{r,echo=TRUE,include=TRUE}
 gen_couple_xy <- function(n) {
   x <- runif(n, 0, 5)
   y <- generate_y(x, a0, b0, s0)
   return(list(x,y))
 }
-n <- 200
-# Creation de 150 couples (x, y)
-xt_yt <- replicate(150, gen_couple_xy(n))
-formulas <- c()
-for (t in 1:150) {
-  xti <- unlist(xt_yt[1, t])
-  yti <- unlist(xt_yt[2, t])
-  a_est_t <- a_estim(xt_yt[, t], n)
-  # Ici on utilise b_estim mais nous ne savons pas comment l'utiliser autrement
-  s2xt <- mean((yti - mean(yti))*(xti - mean(xti)))/b_estim(xt_yt[, t], n)
-  #s2xt <-  mean((xti - mean(xti))**2)
-  sigma_est_t <- sigma_estim(xt_yt[, t], n)
+calcul_formule <- function(n) {
+  xy <- gen_couple_xy(n)
+  x <- xy[[1]]
+  y <- xy[[2]]
+  a_est <- a_estim(xy, n)
+  s2xt <- mean((y - mean(y))*(x - mean(x)))/b_estim(xy, n)
+  #s2xt <-  mean((x - mean(x))**2)
+  sigma_est <- sigma_estim(xy, n)
   # On calcule avec formule donnée et on stocke dans le vecteur formulas 
-  res <- (a_est_t - a0)/sqrt((sigma_est_t/n)*(1+((mean(xti)**2)/s2xt)))
-  formulas <- c(formulas, res)
+  res <- (a_est - a0)/sqrt((sigma_est/n)*(1+((mean(x)**2)/s2xt)))
+  return(res)
 }
-# Comparaison de la répartition de nos formules avec la fonction de 
-# densité de la loi de Student à n-2 degrés de liberté
-hist(formulas, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
+n <- 200
+formules <- replicate(150, calcul_formule(n))
+hist(formules, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
 curve(dt(x, df=n-2), col="red", add=TRUE)
 ```
 
-[On remarque que la cloche formée par l'histogramme suit graphiquement le même parcours de la loi de Student à n-2 degrés de liberté. ]{style="color:blue"}
-[On en déduit que $\displaystyle{\frac{{\hat a} - a_0}{\displaystyle{\sqrt{\frac{{\hat \sigma}^2}{n} (1+\displaystyle{\frac{{\bar x}^2}{s_x^2}})}}}}\sim {\cal T}(n-2).$]{style="color:blue"}
+[On remarque que la cloche formée par l'histogramme suit graphiquement
+le même parcours de la loi de Student à n-2 degrés de
+liberté.]{style="color:blue"} [On en déduit que
+$\displaystyle{\frac{{\hat a} - a_0}{\displaystyle{\sqrt{\frac{{\hat \sigma}^2}{n} (1+\displaystyle{\frac{{\bar x}^2}{s_x^2}})}}}}\sim {\cal T}(n-2).$]{style="color:blue"}
 
-[PROBLEME, ON SE SERT DE b_estim DE MANIERE DETOURNEE, VOIR SI C'EST BIEN COMME CA QU'IL FAUT LE FAIRE]{style="color:green"}
+[PROBLEME, ON SE SERT DE b_estim DE MANIERE DETOURNEE, VOIR SI C'EST
+BIEN COMME CA QU'IL FAUT LE FAIRE]{style="color:green"}
 
 -   [(Q11)]{style="color:red"} Créer les fonctions `gen_IC_a`,
     `gen_IC_b` et `gen_IC_s` qui prennent en argument le vecteur des
@@ -704,6 +712,7 @@ plot(anscombe$x4, anscombe$y4)
     les 4 ensembles de points. Discuter des résultats obtenus.
 
 [Anscombe1]{style="color:orange"}
+
 ```{r, echo=TRUE, include=TRUE}
 reg1<-lm(anscombe$y1~anscombe$x1)
 summary(reg1)
@@ -713,6 +722,7 @@ reg$coefficient
 ```
 
 [Anscombe2]{style="color:orange"}
+
 ```{r, echo=TRUE, include=TRUE}
 reg2<-lm(anscombe$y2~anscombe$x2)
 summary(reg2)
@@ -722,6 +732,7 @@ reg2$coefficient
 ```
 
 [Anscombe3]{style="color:orange"}
+
 ```{r, echo=TRUE, include=TRUE}
 reg3<-lm(anscombe$y3~anscombe$x3)
 summary(reg3)
@@ -731,6 +742,7 @@ reg3$coefficient
 ```
 
 [Anscombe4]{style="color:orange"}
+
 ```{r, echo=TRUE, include=TRUE}
 reg4<-lm(anscombe$y4~anscombe$x4)
 summary(reg4)
@@ -738,7 +750,10 @@ plot(anscombe$x4, anscombe$y4)
 abline(reg4)
 reg4$coefficient
 ```
-[Nous remarquons que les droites de régressions linéaires ont les mêmes équations (avec a = 3 et b = 0.5) et les coefficients r² sont quasiment les mêmes au millième près.]{style="color:blue"}
+
+[Nous remarquons que les droites de régressions linéaires ont les mêmes
+équations (avec a = 3 et b = 0.5) et les coefficients r² sont quasiment
+les mêmes au millième près.]{style="color:blue"}
 
 -   [(Q16)]{style="color:red"} Pour estimer la qualité de l'ajustement,
     on utilise quelques diagnostics graphiques qui permettent de
@@ -763,29 +778,38 @@ reg4$coefficient
         (`fitted.values`) ou bien en fonction des valeurs de la variable
         explicative.
 
-[Anscombe1]{style="color:orange"}  
-    &emsp;[Hypothèse de normalité]{style="color:blue"}  
-      &emsp;&emsp;[Par un graphe quantile-quantile]{style="color:blue"}
+[Anscombe1]{style="color:orange"}\
+ [Hypothèse de normalité]{style="color:blue"}\
+  [Par un graphe quantile-quantile]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 residuals1 <- residuals(reg1)
 qqnorm(residuals1)
 qqline(residuals1)
 ```
-    &emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
-    
+
+```         
+&emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
+```
+
 ```{r, echo=TRUE, include=TRUE}
 hist(residuals1, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
 curve(dnorm(x, mean=mean(residuals1), sd=sd(residuals1)), add=TRUE, col="blue")
 ```
-    &emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
-    
+
+```         
+&emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
+```
+
 ```{r, echo=TRUE, include=TRUE}
 shapiro.test(residuals1)
 ```
-[La p-value est strictement supérieure à 0.05 dans l'hypothèse de normalité est validée.]{style="color:blue"}  
 
-  &emsp;[Hypothèse d'homoscédasticité]{style="color:blue"}
+[La p-value est strictement supérieure à 0.05 dans l'hypothèse de
+normalité est validée.]{style="color:blue"}
+
+ [Hypothèse d'homoscédasticité]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
 residuals_standardized1 <- rstandard(reg1)
 plot(fitted.values(reg1), residuals_standardized1, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
@@ -793,40 +817,53 @@ abline(lm(residuals_standardized1 ~ fitted(reg1)), col="red")
 bptest(reg1)
 plot(reg1, which = 3)
 ```
-[Nous observons que la dispersion est constante et que la ligne de tendance est à 0 donc la variance des résidus est constante. L'hypothèse d'homoscédasticité vérifiée.]{style="color:blue"}  
 
-  &emsp;[Hypothèse de linéarité]{style="color:blue"}
+[Nous observons que la dispersion est constante et que la ligne de
+tendance est à 0 donc la variance des résidus est constante. L'hypothèse
+d'homoscédasticité vérifiée.]{style="color:blue"}
+
+ [Hypothèse de linéarité]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
 plot(reg1, which = 1)
 plot(fitted(reg1), residuals1)
 resettest(reg1)
 ```
 
+[Anscombe2]{style="color:orange"}
 
-[Anscombe2]{style="color:orange"} 
+ [Hypothèse de normalité]{style="color:blue"}\
+  [Par un graphe quantile-quantile]{style="color:blue"}
 
-  &emsp;[Hypothèse de normalité]{style="color:blue"}  
-    &emsp;&emsp;[Par un graphe quantile-quantile]{style="color:blue"}
 ```{r, echo=TRUE, include=TRUE}
 residuals2 <- residuals(reg2)
 qqnorm(residuals2)
 qqline(residuals2)
 ```
-    &emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
-    
+
+```         
+&emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
+```
+
 ```{r, echo=TRUE, include=TRUE}
 hist(residuals2, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
 curve(dnorm(x, mean=mean(residuals2), sd=sd(residuals2)), add=TRUE, col="blue")
 ```
-    &emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
-    
+
+```         
+&emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
+```
+
 ```{r, echo=TRUE, include=TRUE}
 shapiro.test(residuals2)
 ```
-    [La p-value est strictement supérieure à 0.05 dans l'hypothèse de normalité est validée.]{style="color:blue"}  
-    
-  &emsp;[Hypothèse d'homoscédasticité]{style="color:blue"}
-  
+
+```         
+[La p-value est strictement supérieure à 0.05 dans l'hypothèse de normalité est validée.]{style="color:blue"}  
+```
+
+ [Hypothèse d'homoscédasticité]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
 residuals_standardized2 <- rstandard(reg2)
 plot(fitted.values(reg2), residuals_standardized2, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
@@ -834,41 +871,52 @@ abline(lm(residuals_standardized2 ~ fitted(reg2)), col="red")
 bptest(reg2)
 plot(reg2, which = 3)
 ```
-  [Hypothèse d'homocédastité non vérifiée.]{style="color:blue"} [(?)]{style="color:red"}  
-  
-  &emsp;[Hypothèse de linéarité]{style="color:blue"}
-  
+
+[Hypothèse d'homocédastité non vérifiée.]{style="color:blue"}
+[(?)]{style="color:red"}
+
+ [Hypothèse de linéarité]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
 plot(reg2, which = 1)
 plot(fitted(reg2), residuals2)
 resettest(reg2)
 ```
 
+[Anscombe3]{style="color:orange"}
 
-[Anscombe3]{style="color:orange"}  
+ [Hypothèse de normalité]{style="color:blue"}\
+  [Par un graphe quantile-quantile]{style="color:blue"}
 
-  &emsp;[Hypothèse de normalité]{style="color:blue"}  
-    &emsp;&emsp;[Par un graphe quantile-quantile]{style="color:blue"}
 ```{r, echo=TRUE, include=TRUE}
 residuals3 <- residuals(reg3)
 qqnorm(residuals3)
 qqline(residuals3)
 ```
-    &emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
-    
+
+```         
+&emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
+```
+
 ```{r, echo=TRUE, include=TRUE}
 hist(residuals3, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
 curve(dnorm(x, mean=mean(residuals3), sd=sd(residuals3)), add=TRUE, col="blue")
 ```
-    &emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
-    
+
+```         
+&emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
+```
+
 ```{r, echo=TRUE, include=TRUE}
 shapiro.test(residuals3)
 ```
-    [La p-value est strictement inférieure à 0.05 dans l'hypothèse de normalité n'est pas validée.]{style="color:blue"}  
-    
-  &emsp;[Hypothèse d'homoscédasticité]{style="color:blue"}  
-  
+
+```         
+[La p-value est strictement inférieure à 0.05 dans l'hypothèse de normalité n'est pas validée.]{style="color:blue"}  
+```
+
+ [Hypothèse d'homoscédasticité]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
 residuals_standardized3 <- rstandard(reg3)
 plot(fitted.values(reg3), residuals_standardized3, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
@@ -876,51 +924,64 @@ abline(lm(residuals_standardized3 ~ fitted(reg3)), col="red")
 bptest(reg3)
 plot(reg3, which = 3)
 ```
-  [Hypothèse d'homocédastité non vérifiée.]{style="color:blue"} [(?)]{style="color:red"}  
-  
-  &emsp;[Hypothèse de linéarité]{style="color:blue"}
-  
+
+[Hypothèse d'homocédastité non vérifiée.]{style="color:blue"}
+[(?)]{style="color:red"}
+
+ [Hypothèse de linéarité]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
 plot(reg3, which = 1)
 plot(fitted(reg3), residuals3)
 resettest(reg3)
 ```
 
+[Anscombe4]{style="color:orange"}
 
-[Anscombe4]{style="color:orange"}  
+ [Hypothèse de normalité]{style="color:blue"}\
+  [Par un graphe quantile-quantile]{style="color:blue"}
 
-  &emsp;[Hypothèse de normalité]{style="color:blue"}  
-    &emsp;&emsp;[Par un graphe quantile-quantile]{style="color:blue"}
 ```{r, echo=TRUE, include=TRUE}
 residuals4 <- residuals(reg4)
 qqnorm(residuals4)
 qqline(residuals4)
 ```
-    &emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
-    
+
+```         
+&emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
+```
+
 ```{r, echo=TRUE, include=TRUE}
 hist(residuals4, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
 curve(dnorm(x, mean=mean(residuals4), sd=sd(residuals4)), add=TRUE, col="blue")
 ```
-    &emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
-    
+
+```         
+&emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
+```
+
 ```{r, echo=TRUE, include=TRUE}
 shapiro.test(residuals4)
 ```
-    [La p-value est strictement supérieure à 0.05 dans l'hypothèse de normalité est validée.]{style="color:blue"}  
-    
-  &emsp;[Hypothèse d'homoscédasticité]{style="color:blue"}  
-  
+
+```         
+[La p-value est strictement supérieure à 0.05 dans l'hypothèse de normalité est validée.]{style="color:blue"}  
+```
+
+ [Hypothèse d'homoscédasticité]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
 residuals_standardized4 <- rstandard(reg4)
 plot(fitted.values(reg4), sqrt(residuals_standardized4), main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
 # abline(lm(sqrt(residuals_standardized4) ~ fitted(reg4)), col="red")
 bptest(reg4)
 ```
-  [Hypothèse d'homocédastité non vérifiée.]{style="color:blue"} [(?)]{style="color:red"}  
-  
-  &emsp;[Hypothèse de linéarité]{style="color:blue"}
-  
+
+[Hypothèse d'homocédastité non vérifiée.]{style="color:blue"}
+[(?)]{style="color:red"}
+
+ [Hypothèse de linéarité]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
 plot(reg4, which = 1)
 plot(fitted(reg4), residuals4)
@@ -946,7 +1007,6 @@ resettest(reg4)
         suite.
 
     -   Charger le jeu de données `Real_Data`
-    
 
 ## Quelques éléments de statistique descriptive
 
@@ -956,7 +1016,17 @@ resettest(reg4)
     linéaire parait judicieux (représentation graphique, coefficient de
     corrélation,..., ..)
 
-[Nous choisissons d'utiliser le jeu de données `bodyfat.dat`, en particulier les colonnes `fat`et `triceps`. Ayant quelques soucis lors de l'utilisation du fichier en format `.dat` nous l'avons converti en `.csv` à l'aide d'un script python.]{style="color:blue"}
+[Nous choisissons d'utiliser le jeu de données `bodyfat.dat`, en
+particulier les colonnes `Fat`et `Triceps`. Ayant quelques soucis lors
+de l'utilisation du fichier en format `.dat` nous l'avons converti en
+`.csv` à l'aide d'un script python.]{style="color:blue"}
+
+[Nous avons sélectionné ce jeu de données et plus particulièrement ces
+variables car, intuitivement, elles nous paraissent avoir un lien entre
+elles. La variable `Fat` représente la masse graisseuse d'un invidu et
+la variable `Triceps` représente l'épaisseur du pli cutané du triceps.
+L'échantillon du jeu de données a été prélevé sur 20 femmes en bonne
+santé agées entre 20 et 30 ans.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 bodyfat <- read.csv('Jeux_Donnees/bodyfat.csv')
@@ -964,28 +1034,13 @@ bodyfat <- read.csv('Jeux_Donnees/bodyfat.csv')
 
 ```{r, echo=TRUE, include=TRUE}
 plot(bodyfat$Fat, bodyfat$Triceps)
-reg<-lm(bodyfat$Triceps~bodyfat$Fat)
 ```
 
-```{r, echo=TRUE, include=TRUE}
-summary(reg)
-```
-
-[Ici, le R^2 est à 0.7111 > 0.6 donc les données sont corrélées. 71% des valeurs de la colonne `fat` sont expliéquées par les valeurs de `triceps`. (à vérifier)]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
-plot(bodyfat$Fat, bodyfat$Triceps)
-abline(reg)
-```
-[Nous observons un bonne corrélation des variables autour de la droite de régression.]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
-reg$coefficient
-```
+[Nous observons une tendance linéaire entre les variables `Fat` et
+`Triceps` qui témoigne d'une possible corrélation.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 Real_Data <- read.csv('Jeux_Donnees/bodyfat.csv')
-
 ```
 
 ## Estimation ponctuelle et par IC des paramètres
@@ -1007,10 +1062,10 @@ y_ests <- a_est + b_est*x
 lines(x, y_ests, col="green")
 regression <- lm(y~x)
 abline(regression, col="red")
-
 ```
 
-[On retrouve la corrélation trouvée plus tôt.]{style="color:blue"}
+[A l'aide du tracé ci-dessus, nous pouvons observer que la droite des
+moindres carrés suit la droite de régression.]{style="color:blue"}
 
 -   [(Q19)]{style="color:red"} A l'aide de la fonction `confint`,
     déterminer un estimation par intervalle de confiance des paramètres
@@ -1018,34 +1073,44 @@ abline(regression, col="red")
 
 ```{r, echo=TRUE, include=TRUE}
 confint(regression, level=0.95) # avec un intervalle de confiance à 95%
-
 ```
+
+[Avec un niveau de confiance à 95%, on peut dire que
+$b \in [0.5677; 1.091]$ et que
+$a \in [3.1056; 13.9980]$]{style="color:blue"}
 
 ## Qualité de l'ajustement
 
 -   [(Q20)]{style="color:red"} Déterminer le coefficient $R^2$ de la
     régression linéaire sur votre jeu de données; qu'en pensez-vous ?
-    
-```{r, echo=TRUE, include=TRUE}
-R.squared <- summary(regression)$r.squared 
 
+```{r, echo=TRUE, include=TRUE}
+R.squared <- summary(regression)$r.squared
+R.squared
 ```
 
-[R^2 > 0.6, c'est bien.]{style="color:blue"}
+[Le coefficient de détermination permet de mesurer la qualité de
+l'ajustement de la régression. Ainsi, on peut dire que 71% de la
+variance des valeurs de la variable est expliquée par la régression sur
+les variables explicatives. Autrement dit, le modèle de régression
+explique 71% de la variation observée dans les
+données.]{style="color:blue"}
 
 -   [(Q21)]{style="color:red"} Vérifier que
     $R^2= \displaystyle{\frac{s^2_{xy}}{s_x^2s_y^2}}=(\text{ corrélation empirique entre } x \text{ et } y)^2$.
-    
+
 ```{r, echo=TRUE, include=TRUE}
 S.2.xy <- (mean(x*y)-mean(x)*mean(y))**2
 S.2.x <- mean((x - mean(x))**2)
 S.2.y <- mean((y - mean(y))**2)
 S.2.xy/(S.2.x * S.2.y)
 R.squared
-
 ```
 
-[Les deux sont égaux. Notre régression explique la plupart de la variance de la variable dépendante.]{style="color:blue"}
+[On trouve que $R^2$ et $\displaystyle{\frac{s^2_{xy}}{s_x^2s_y^2}}$
+égales. Notre régression explique en partie la variance de la variable
+explicative. C'est à dire que la variable `Triceps` explique la variable
+`Fat`.]{style="color:blue"}
 
 -   [(Q22)]{style="color:red"} Tester si le coefficient de la pente est
     nul, c-à-d, tester $H_0 : \; b=0$ contre $H_1 \;:$ le complémentaire
@@ -1055,7 +1120,10 @@ R.squared
 ```{r, echo=TRUE, include=TRUE}
 regression$coefficients[2]
 ```
-[b = 0.8295705 donc != 0]{style="color:blue"}
+
+[$b = 0.8295705$ donc \$ b \neq 0\$. On rejette l'hypothèse $H_0$ et on
+en conclut que il existe une dépendance linéaire entre `Fat` et
+`Triceps`.]{style="color:blue"}
 
 *Indication* : On pourra utiliser la fonction pivotale pour $b$ (cf
 section I.3 de ce document et/ou Proposition 7.6 du poly CM) ou bien
@@ -1067,26 +1135,29 @@ fonction "lm".
 -   [(Q23)]{style="color:red"} Evaluer visuellement la normalité des
     résidus corrigés à l'aide d'un diagramme quantile--quantile
     (fonctions "qqnorm" et "qqline").
-    
+
 ```{r, echo=TRUE, include=TRUE}
 residuals <- residuals(regression)
 qqnorm(residuals)
 qqline(residuals)
 ```
 
-[La plupart des quantiles théoriques en fonction des quantiles observés appartiennent à la droite qqline ]{style="color:blue"}
+[La plupart des quantiles théoriques en fonction des quantiles observés
+appartiennent à la droite des quantiles--quantiles.]{style="color:blue"}
 
 -   [(Q24)]{style="color:red"} Evaluer visuellement l'indépendance des
     résidus corrigés et l'hypothèse d'homoscédasticité à l'aide du
     graphe des résidus corrigés versus la variable explicative.
 
-```{r, echo=TRUE, include=TRUE} 
+```{r, echo=TRUE, include=TRUE}
 residuals_standardized <- rstandard(regression)
 plot(fitted.values(regression), residuals_standardized, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
 abline(lm(residuals_standardized ~ fitted(regression)), col="red")
 ```
 
-[Nous n'observons pas beaucoup de variations dans la dispersion autour de la ligne de tendance ce qui valide l'hypothèse d'homoscédasticité. Et la ligne de tendance est à 0 donc la variance des résidus est constante.]{style="color:blue"}
+[Nous observons une répartition aléatoire des points sur le graphique
+(ne semblent pas suivre une fonction particulière). Cela valide
+l'hypothèse d'homoscédasticité.]{style="color:blue"}
 
 ## Prévision (cf Section 7.5.5, poly CM)
 
@@ -1119,25 +1190,35 @@ ponctuelle de $\mathbb{E}(Y_0)$
     pour lesquelles on déterminera un intervalle de confiance pour
     $\mathbb{E}(Y_0)$ au niveau $0.95$ et un intervalle de prédiction au
     niveau $0.95$.
-    
-```{r, echo=TRUE, include=TRUE} 
-x0.1 <- round(runif(1,11,26),1)
-x0.2 <- round(runif(1,11,26),1)
 
-# Récupération des intervalles de confiances pour a et b
-a.IC <- confint(regression, level=0.95)[1, ]
-b.IC <- confint(regression, level=0.95)[2, ]
+```{r, echo=TRUE, include=TRUE}
+x0.1 <- 16.8
+x0.2 <- 24.0
 
-# Obtention de 2 intervalles de confiance pour E(y0.1) et E(y0.2)
-esp.yO.1_IC <- a.IC + b.IC*x0.1
-esp.y0.2_IC <- a.IC + b.IC*x0.2
+new_data <- data.frame(x = c(x0.1, x0.2))
 
-# Fonction pour obtenir un intervalle de prédiction de Y0
-predict(regression,data.frame(x = c(x0.1, x0.2)),interval="prediction",level = 0.95)
-
+# Intervalle de confiance
+predict(regression,new_data,interval="confidence",level = 0.95)
+# Interval de prédiction
+predict(regression,new_data,interval="prediction",level = 0.95)
 ```
+
+[Ainsi, nous trouvons à un niveau de confiance de 95%
+:]{style="color:blue"}
+
+[-   Pour $x_{0,1} = 16.8$ : un intervalle de confiance
+    pour $\mathbb{E}(Y_0) \in [20.9111, 24.0661]$ et un intervalle de
+    prédiction $Y_0 \in [16.4509, 28.5262]$]{style="color:blue"}
+
+[-   Pour $x_{0,2} = 24.0$ un intervalle de confiance
+    $\mathbb{E}(Y_0) \in [26.8211, 30.1019]$ et un intervalle de
+    prédiction $Y_0 \in [22.4072, 34.5159]$]{style="color:blue"}
 
 ## Conclusion
 
 -   [(Q26)]{style="color:red"} Votre conclusion en deux ou trois
     phrases.
+
+[De par ces observations et hypothèses, nous en concluons que le modèle de régression linéaire est adapté à nos données.]{style:"color:blue"}
+
+[Ainsi, nous avons déterminé que nous pouvons, à partir du pli du triceps d'un individu, prédire un encadrement de sa masse graisseuse à un niveau de confiance choisi.]{style:"color:blue"}

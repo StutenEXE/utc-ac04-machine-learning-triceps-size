@@ -112,8 +112,8 @@ calcul_formule <- function(n) {
   return(res)
 }
 n <- 200
-formulas <- replicate(150, calcul_formule(n))
-hist(formulas, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
+formules <- replicate(150, calcul_formule(n))
+hist(formules, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
 curve(dt(x, df=n-2), col="red", add=TRUE)
 
 ## Q11
