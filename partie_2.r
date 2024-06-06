@@ -24,7 +24,7 @@ y <- generate_y(x, a0, b0, s0)
 
 ## Q2
 # y en fonction de x (plot)
-plot(x, y, col = "blue")
+plot(x, y, col = "black")
 # b0*x + a0 (courbe) 
 lines(x, a0 + x*b0, add=TRUE, col = "red")
 
@@ -58,7 +58,7 @@ b_est <- b_estim(xy, n)
 sigma_est <- sigma_estim(xy, n)
 
 ## Q5
-plot(x, y, col="blue")
+plot(x, y, col="black")
 lines(x, a0 + x*b0, add=TRUE, col="red")
 y_ests <- a_est + b_est*x
 lines(x, y_ests, add=TRUE, col="green")
