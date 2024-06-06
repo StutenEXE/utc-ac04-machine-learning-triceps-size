@@ -1159,9 +1159,8 @@ $Y_0 \in [22.4072, 34.5159]$]{style="color:blue"}
 -   [(Q26)]{style="color:red"} Votre conclusion en deux ou trois
     phrases.
 
-[De par ces observations et hypothèses, nous en concluons que le modèle
-de régression linéaire est adapté à nos données.]{style:"color:blue"}
+[De par ces observations et hypothèses, nous en concluons que le modèle de régression linéaire est adapté à nos données.]{style:"color:blue"}
 
 [Ainsi, nous avons déterminé que nous pouvons, à partir du pli du
-triceps d'un individu, prédire un encadrement de sa masse graisseuse à
-un niveau de confiance choisi.]{style:"color:blue"}
+triceps d'un individu, prédire un encadrement de sa masse graisseuse à un niveau de confiance choisi.]{style:"color:blue"}  
+  
