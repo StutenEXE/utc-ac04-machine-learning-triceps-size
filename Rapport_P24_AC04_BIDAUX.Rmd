@@ -736,317 +736,222 @@ $$\tilde{\epsilon_i} = \frac{\hat{\epsilon}_i}{\sqrt{1-h_i}}, \quad \text{avec}\
 
 ```{r, echo=TRUE, include=TRUE}
 data(anscombe)
-anscombe
+knitr::kable(anscombe, caption = "Données d'Anscombe")
 ```
 
-[Anscombe1]{style="color:orange"}
+```{r, echo=TRUE, include=TRUE}
+# Affichage des 4 jeux de données Anscombe
+knitr::kable(anscombe[, c("x1", "y1")], caption = "Données d'Anscombe1")
+knitr::kable(anscombe[, c("x2", "y2")], caption = "Données d'Anscombe2")
+knitr::kable(anscombe[, c("x3", "y3")], caption = "Données d'Anscombe3")
+knitr::kable(anscombe[, c("x4", "y4")], caption = "Données d'Anscombe4")
+```
 
 ```{r, echo=TRUE, include=TRUE}
-# anscombe[,which(colnames(anscombe) %in% c("x1","y1"))]
-anscombe[, c("x1", "y1")] # plus simplement écrit
+# Génération des graphiques de corrélation
+par(mfrow = c(2,2))
+
 plot(anscombe$x1, anscombe$y1)
-```
-
-[Anscombe2]{style="color:orange"}
-
-```{r, echo=TRUE, include=TRUE}
-anscombe[, c("x2", "y2")]
 plot(anscombe$x2, anscombe$y2)
-```
-
-[Anscombe3]{style="color:orange"}
-
-```{r, echo=TRUE, include=TRUE}
-anscombe[, c("x3", "y3")]
 plot(anscombe$x3, anscombe$y3)
-```
-
-[Anscombe4]{style="color:orange"}
-
-```{r, echo=TRUE, include=TRUE}
-anscombe[, c("x4", "y4")]
 plot(anscombe$x4, anscombe$y4)
 ```
 
--   [(Q15)]{style="color:red"} Effectuer les régressions linéaires sur
-    les 4 ensembles de points. Discuter des résultats obtenus.
 
-[Anscombe1]{style="color:orange"}
+-   [(Q15)]{style="color:red"} Effectuer les régressions linéaires sur les 4 ensembles de points. Discuter des résultats obtenus.
+
+[Nous appliquons la régression linéaire sur les 4 datasets.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
+# Application de la régression linéaire sur les 4 datasets
 reg1<-lm(anscombe$y1~anscombe$x1)
+reg2<-lm(anscombe$y2~anscombe$x2)
+reg3<-lm(anscombe$y3~anscombe$x3)
+reg4<-lm(anscombe$y4~anscombe$x4)
+```
+
+[Nous affichons les résumés statistiques des régressions linéaires sur les quatre datasets afin d'identifier les éléments statistiques qui nous intéressent.]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
 summary(reg1)
+summary(reg2)
+summary(reg3)
+summary(reg4)
+```
+
+[Nous nous intéressons aux coefficients $\hat a$ et $\hat b$, ainsi qu'au $\hat \sigma^2$.]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
+# Anscombe1
+reg1$coefficient
+summary(reg1)$sigma**2
+```
+[Pour Anscombe1, $\hat b \approx 0.5$ , $\hat a \approx 3.0$ et $\hat \sigma^2 \approx 1.53$.]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
+# Anscombe2
+reg2$coefficient
+summary(reg2)$sigma**2
+```
+[Pour Anscombe2, $\hat b \approx 0.5$ , $\hat a \approx 3.0$ et $\hat \sigma^2 \approx 1.53$.]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
+# Anscombe3
+reg3$coefficient
+summary(reg3)$sigma**2
+```
+[Pour Anscombe3, $\hat b \approx 0.5$ , $\hat a \approx 3.0$ et $\hat \sigma^2 \approx 1.53$.]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
+# Anscombe4
+reg4$coefficient
+summary(reg4)$sigma**2
+```
+[Pour Anscombe4, $\hat b \approx 0.5$ , $\hat a \approx 3.0$ et $\hat \sigma^2 \approx 1.53$.]{style="color:blue"}
+
+[Nous traçons les graphiques de corrélation et les enrichissons avec la droite de régression de chaque sous-jeu de données.]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
+# Génération des graphiques de corrélation avec leur droite de régression
+par(mfrow = c(2,2))
+
 plot(anscombe$x1, anscombe$y1)
 abline(reg1)
-reg$coefficient
-```
 
-[Anscombe2]{style="color:orange"}
-
-```{r, echo=TRUE, include=TRUE}
-reg2<-lm(anscombe$y2~anscombe$x2)
-summary(reg2)
 plot(anscombe$x2, anscombe$y2)
 abline(reg2)
-reg2$coefficient
-```
 
-[Anscombe3]{style="color:orange"}
-
-```{r, echo=TRUE, include=TRUE}
-reg3<-lm(anscombe$y3~anscombe$x3)
-summary(reg3)
 plot(anscombe$x3, anscombe$y3)
 abline(reg3)
-reg3$coefficient
-```
 
-[Anscombe4]{style="color:orange"}
-
-```{r, echo=TRUE, include=TRUE}
-reg4<-lm(anscombe$y4~anscombe$x4)
-summary(reg4)
 plot(anscombe$x4, anscombe$y4)
 abline(reg4)
-reg4$coefficient
 ```
 
-[Nous remarquons que les droites de régressions linéaires ont les mêmes
-équations (avec a = 3 et b = 0.5) et les coefficients r² sont quasiment
-les mêmes au millième près.]{style="color:blue"}
+[Nous remarquons que les droites de régressions linéaires ont les mêmes équations $\hat y = \hat a + \hat bx \approx 3 + 0.5x$.]{style="color:blue"}
 
--   [(Q16)]{style="color:red"} Pour estimer la qualité de l'ajustement,
-    on utilise quelques diagnostics graphiques qui permettent de
-    vérifier empiriquement la validité des hypothèses $(\mathcal{ H})$
-    (cf section 7.5 du poly de cours).
+-   [(Q16)]{style="color:red"} Pour estimer la qualité de l'ajustement, on utilise quelques diagnostics graphiques qui permettent de vérifier empiriquement la validité des hypothèses $(\mathcal{ H})$ (cf section 7.5 du poly de cours).
 
-    Faire une analyse des résidus et discuter de la validité des
-    hypothèses de normalité, d'homoscédasticité et éventuellement des
-    hypothèses de linéarité et d'indépendance pour l'ensemble des
-    régressions linéaires proposées par le jeu de données Anscombe.
+    Faire une analyse des résidus et discuter de la validité des hypothèses de normalité, d'homoscédasticité et éventuellement des hypothèses de linéarité et d'indépendance pour l'ensemble des régressions linéaires proposées par le jeu de données Anscombe.
 
     En particulier, on tracera
 
-    -   Pour la normalité, le diagramme quantile--quantile des résidus
-        avec les fonctions `qqnorm` et `qqline` (on pourra également
-        tracer l'histogramme des résidus corrigés et y superposer la
-        densité d'une normale d'espérance leur moyenne empirique et
-        d'écart-type, leur écart-type empirique);
-
-    -   Pour l'homoscédasticité et éventuellement l'indépendance, les
-        résidus standardisés (`rstandard`) en fonction des prédictions
-        (`fitted.values`) ou bien en fonction des valeurs de la variable
-        explicative.
-
-[Anscombe1]{style="color:orange"}\
- [Hypothèse de normalité]{style="color:blue"}\
-  [Par un graphe quantile-quantile]{style="color:blue"}
+    -   Pour la normalité, le diagramme quantile--quantile des résidus avec les fonctions `qqnorm` et `qqline` (on pourra également tracer l'histogramme des résidus corrigés et y superposer la densité d'une normale d'espérance leur moyenne empirique et d'écart-type, leur écart-type empirique);
 
 ```{r, echo=TRUE, include=TRUE}
+# Calcul des résidus
 residuals1 <- residuals(reg1)
-qqnorm(residuals1)
-qqline(residuals1)
-```
-
-```         
-&emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
-```
-
-```{r, echo=TRUE, include=TRUE}
-hist(residuals1, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
-curve(dnorm(x, mean=mean(residuals1), sd=sd(residuals1)), add=TRUE, col="blue")
-```
-
-```         
-&emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
-```
-
-```{r, echo=TRUE, include=TRUE}
-shapiro.test(residuals1)
-```
-
-[La p-value est strictement supérieure à 0.05 dans l'hypothèse de
-normalité est validée.]{style="color:blue"}
-
- [Hypothèse d'homoscédasticité]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
-residuals_standardized1 <- rstandard(reg1)
-plot(fitted.values(reg1), residuals_standardized1, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
-abline(lm(residuals_standardized1 ~ fitted(reg1)), col="red")
-bptest(reg1)
-plot(reg1, which = 3)
-```
-
-[Nous observons que la dispersion est constante et que la ligne de
-tendance est à 0 donc la variance des résidus est constante. L'hypothèse
-d'homoscédasticité vérifiée.]{style="color:blue"}
-
- [Hypothèse de linéarité]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
-plot(reg1, which = 1)
-plot(fitted(reg1), residuals1)
-resettest(reg1)
-```
-
-[Anscombe2]{style="color:orange"}
-
- [Hypothèse de normalité]{style="color:blue"}\
-  [Par un graphe quantile-quantile]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
 residuals2 <- residuals(reg2)
-qqnorm(residuals2)
-qqline(residuals2)
-```
-
-```         
-&emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
-```
-
-```{r, echo=TRUE, include=TRUE}
-hist(residuals2, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
-curve(dnorm(x, mean=mean(residuals2), sd=sd(residuals2)), add=TRUE, col="blue")
-```
-
-```         
-&emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
-```
-
-```{r, echo=TRUE, include=TRUE}
-shapiro.test(residuals2)
-```
-
-```         
-[La p-value est strictement supérieure à 0.05 dans l'hypothèse de normalité est validée.]{style="color:blue"}  
-```
-
- [Hypothèse d'homoscédasticité]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
-residuals_standardized2 <- rstandard(reg2)
-plot(fitted.values(reg2), residuals_standardized2, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
-abline(lm(residuals_standardized2 ~ fitted(reg2)), col="red")
-bptest(reg2)
-plot(reg2, which = 3)
-```
-
-[Hypothèse d'homocédastité non vérifiée.]{style="color:blue"}
-[(?)]{style="color:red"}
-
- [Hypothèse de linéarité]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
-plot(reg2, which = 1)
-plot(fitted(reg2), residuals2)
-resettest(reg2)
-```
-
-[Anscombe3]{style="color:orange"}
-
- [Hypothèse de normalité]{style="color:blue"}\
-  [Par un graphe quantile-quantile]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
 residuals3 <- residuals(reg3)
-qqnorm(residuals3)
-qqline(residuals3)
-```
-
-```         
-&emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
-```
-
-```{r, echo=TRUE, include=TRUE}
-hist(residuals3, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
-curve(dnorm(x, mean=mean(residuals3), sd=sd(residuals3)), add=TRUE, col="blue")
-```
-
-```         
-&emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
-```
-
-```{r, echo=TRUE, include=TRUE}
-shapiro.test(residuals3)
-```
-
-```         
-[La p-value est strictement inférieure à 0.05 dans l'hypothèse de normalité n'est pas validée.]{style="color:blue"}  
-```
-
- [Hypothèse d'homoscédasticité]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
-residuals_standardized3 <- rstandard(reg3)
-plot(fitted.values(reg3), residuals_standardized3, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
-abline(lm(residuals_standardized3 ~ fitted(reg3)), col="red")
-bptest(reg3)
-plot(reg3, which = 3)
-```
-
-[Hypothèse d'homocédastité non vérifiée.]{style="color:blue"}
-[(?)]{style="color:red"}
-
- [Hypothèse de linéarité]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
-plot(reg3, which = 1)
-plot(fitted(reg3), residuals3)
-resettest(reg3)
-```
-
-[Anscombe4]{style="color:orange"}
-
- [Hypothèse de normalité]{style="color:blue"}\
-  [Par un graphe quantile-quantile]{style="color:blue"}
-
-```{r, echo=TRUE, include=TRUE}
 residuals4 <- residuals(reg4)
-qqnorm(residuals4)
+```
+
+```{r, echo=TRUE, include=TRUE}
+# Génération des diagrammes Quantile-Quantile
+par(mfrow = c(2,2))
+
+qqnorm(residuals1, main = "QQ Plot Anscombe1")
+qqline(residuals1)
+qqnorm(residuals2, main = "QQ Plot Anscombe2")
+qqline(residuals2)
+qqnorm(residuals3, main = "QQ Plot Anscombe3")
+qqline(residuals3)
+qqnorm(residuals4, main = "QQ Plot Anscombe4")
 qqline(residuals4)
-```
+```  
 
-```         
-&emsp;&emsp;[Par un histogramme des résidus corrigés]{style="color:blue"}
-```
+[Ces diagrammes Quantile-Quantile nous permettent de comparer la distribution de nos données en comparaison à la distribution normale.]{style="color:blue"}
+
+[Nous observons que les données des 4 datasets suivent plus ou moins la distribution normale. Cependant, nous remarquons que l'une des observations dans Anscombes3 constitue une valeur aberrante et que les observations d'Anscombe1 sont parfois un peu plus éloignées de la distribution normale même si la tendance semble correcte.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
-hist(residuals4, prob= TRUE, main="Histogramme des résidus", xlab="Résidus")
+# Génération des histogrammes des résidus corrigés et densité de la normale
+par(mfrow = c(2,2))
+hist(residuals1, prob= TRUE, main="Histogramme des résidus", xlab="Résidus Anscombe1")
+curve(dnorm(x, mean=mean(residuals1), sd=sd(residuals1)), add=TRUE, col="blue")
+      
+hist(residuals2, prob= TRUE, main="Histogramme des résidus", xlab="Résidus Anscombe2")
+curve(dnorm(x, mean=mean(residuals2), sd=sd(residuals2)), add=TRUE, col="blue")
+
+hist(residuals3, prob= TRUE, main="Histogramme des résidus", xlab="Résidus Anscombe3")
+curve(dnorm(x, mean=mean(residuals3), sd=sd(residuals3)), add=TRUE, col="blue")
+
+hist(residuals4, prob= TRUE, main="Histogramme des résidus", xlab="Résidus Anscombe4")
 curve(dnorm(x, mean=mean(residuals4), sd=sd(residuals4)), add=TRUE, col="blue")
-```
 
-```         
-&emsp;&emsp;[Par un test de Shapiro]{style="color:blue"}
-```
+```  
+
+[La méthode de visualisation par l'histogramme des résidus permet d'observer que les données d'Anscombe1 et Anscombe3 sont les plus susceptibles de valider l'hypothèse de normalité. Cependant, nous n'avons que très peu de données dans ce dataset, ce qui peut expliquer que la normalité ne soit pas flagrante sur ces diagrammes.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
+# Tests de Shapiro-Wilk
+par(mfrow = c(2,2))
+shapiro.test(residuals1)
+shapiro.test(residuals2)
+shapiro.test(residuals3)
 shapiro.test(residuals4)
-```
+```  
 
-```         
-[La p-value est strictement supérieure à 0.05 dans l'hypothèse de normalité est validée.]{style="color:blue"}  
-```
+[Enfin, pour appuyer les précédentes observations faites sur la normalité, nous utilisons le test de Shapiro-Wilk. Les hypothèses de ce test sont les suivantes :]{style="color:blue"}
 
- [Hypothèse d'homoscédasticité]{style="color:blue"}
+[$H_0$ : la variable est normalement distribuée]{style="color:blue"}
+[$H_1$ : la variable n'est pas normalement distribuée]{style="color:blue"}
+
+[Plus la statistique $W$ se rapproche de 1, plus l'hypothèse de normalité est pertinente pour le jeu de données. Anscombe4 et Anscombe1 ont un $W > 0.94$ et Anscombe2 a un $W > 0.87$.]{style="color:blue"}
+
+[Aussi, pour un seuil à $0.05$, la p-value nous amène à retenir Anscombe1, Anscombe2 et Anscombe4 normalement distribués car leur p-value est strictement supérieure au seuil $0.05$.]{style="color:blue"}
+
+    -   Pour l'homoscédasticité et éventuellement l'indépendance, les résidus standardisés (`rstandard`) en fonction des prédictions (`fitted.values`) ou bien en fonction des valeurs de la variable explicative.
 
 ```{r, echo=TRUE, include=TRUE}
+# Calcul des résidus standardisés
+residuals_standardized1 <- rstandard(reg1)
+residuals_standardized2 <- rstandard(reg2)
+residuals_standardized3 <- rstandard(reg3)
 residuals_standardized4 <- rstandard(reg4)
-plot(fitted.values(reg4), sqrt(residuals_standardized4), main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
-# abline(lm(sqrt(residuals_standardized4) ~ fitted(reg4)), col="red")
-bptest(reg4)
 ```
-
-[Hypothèse d'homocédastité non vérifiée.]{style="color:blue"}
-[(?)]{style="color:red"}
-
- [Hypothèse de linéarité]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
-plot(reg4, which = 1)
-plot(fitted(reg4), residuals4)
-resettest(reg4)
+# Génération des graphiques des résidus standardisés en fonctions des prédictions
+par(mfrow = c(2,2))
+
+plot(fitted.values(reg1), residuals_standardized1, main="Anscombe1", xlab="Valeurs prédites", ylab="Résidus standardisés")
+abline(h=0, col="red")
+
+plot(fitted.values(reg2), residuals_standardized2, main="Anscombe2", xlab="Valeurs prédites", ylab="Résidus standardisés")
+abline(h=0, col="red")
+
+plot(fitted.values(reg3), residuals_standardized3, main="Anscombe3", xlab="Valeurs prédites", ylab="Résidus standardisés")
+abline(h=0, col="red")
+
+plot(fitted.values(reg4), residuals_standardized4, main="Anscombe4", xlab="Valeurs prédites", ylab="Résidus standardisés")
+abline(h=0, col="red")
+```  
+
+[Seulement Anscombe1 valide l'hypothèse d'homoscédasticité car nous n'observons pas de variation selon x dans la dispersion.]{style="color:blue"}
+
+[Au contraire, pour Anscombe2 les résidus standardisés en fonction de l'abscisse des données semble suivre une relation quadratique.]{style="color:blue"}
+
+[Pour Anscombe3, nous n'observons pas de caractère aléatoire et cela semble suivre une fonction.]{style="color:blue"}
+
+[Pour Anscombe4, nous sommes étonnés de ne plus trouver sur ce graphique la valeur aberrante qui se détachait précédemment sur la représentation de ce jeu de données. En ne prenant pas en considération cette valeur aberrante, Anscombe4 valide l'hypothèse d'homoscédasticité. Mais si nous prenons en compte la valeur aberrante, Anscombe4 ne valide pas l'hypothèse d'homoscédasticité.]{style="color:blue"}
+
+[En effet, nous remarquons que le graphique des résidus (non standardisés) en fonction des prédictions est différent que celui présenté ci-dessus.]{style="color:blue"}
+
+```{r, echo=TRUE, include=TRUE}
+plot(fitted(reg4), residuals4, main="Anscombe4", xlab="Valeurs prédites", ylab="Résidus non standardisés")
+abline(h=0, col="red")
 ```
+
+[En conclusion :]{style="color:blue"}
+
+[Anscombe1 valide les hypothèses de normalité et d'homoscédasticité.]{style="color:blue"}
+
+[Anscombe2 valide l'hypothèse de normalité (de peu).]{style="color:blue"}
+
+[Anscombe3 ne valide aucune des deux hypothèses explorées.]{style="color:blue"}
+
+[Anscombe4 valide l'hypothèse de normalité et d'homoscédasticité (pour les résidus standardisés).]{style="color:blue"}
 
 # Jeu de données réelles `Real_Data`
 
@@ -1054,39 +959,20 @@ resettest(reg4)
     proposés `car.csv` ou `bodyfat.dat` ou `happiness.csv` ou choisir un
     jeu de données qui vous est propre :
 
-    -   si vous optez pour l'un des jeu de données proposés, alors vous
-        choisirez un jeu de données qui vous parait cohérent de
-        modéliser par le modèle de régression linéaire et vous décrirez
-        votre démarche dans la question 14; en particulier, avant de
-        retenir une paire de variables qui convient, vous étudierez les
-        possibilités de modèles possibles de régression pour différentes
-        paires de variables numériques du data.frame.
+    -   si vous optez pour l'un des jeu de données proposés, alors vous choisirez un jeu de données qui vous parait cohérent de modéliser par le modèle de régression linéaire et vous décrirez votre démarche dans la question 14; en particulier, avant de retenir une paire de variables qui convient, vous étudierez les possibilités de modèles possibles de régression pour différentes paires de variables numériques du data.frame.
 
-    -   Si vous optez pour un jeu de données qui vous est propre, alors
-        demandez l'avis au responsable de l'uv avant de traiter la
-        suite.
+    -   Si vous optez pour un jeu de données qui vous est propre, alors demandez l'avis au responsable de l'uv avant de traiter la suite.
 
     -   Charger le jeu de données `Real_Data`
 
 ## Quelques éléments de statistique descriptive
 
--   [(Q17)]{style="color:red"} Motiver le choix de votre jeu de données
-    par des éléments de statistique descriptive qui vous font penser que
-    la modélisation de ce jeu de données par un modèle de régression
-    linéaire parait judicieux (représentation graphique, coefficient de
-    corrélation,..., ..)
+-   [(Q17)]{style="color:red"} Motiver le choix de votre jeu de données par des éléments de statistique descriptive qui vous font penser que la modélisation de ce jeu de données par un modèle de régression linéaire parait judicieux (représentation graphique, coefficient de corrélation,..., ..)
 
 [Nous choisissons d'utiliser le jeu de données `bodyfat.dat`, en
-particulier les colonnes `Fat`et `Triceps`. Ayant quelques soucis lors
-de l'utilisation du fichier en format `.dat` nous l'avons converti en
-`.csv` à l'aide d'un script python.]{style="color:blue"}
+particulier les colonnes `Fat`et `Triceps`. Ayant quelques soucis lors de l'utilisation du fichier en format `.dat` nous l'avons converti en `.csv` à l'aide d'un script python.]{style="color:blue"}
 
-[Nous avons sélectionné ce jeu de données et plus particulièrement ces
-variables car, intuitivement, elles nous paraissent avoir un lien entre
-elles. La variable `Fat` représente la masse graisseuse d'un invidu et
-la variable `Triceps` représente l'épaisseur du pli cutané du triceps.
-L'échantillon du jeu de données a été prélevé sur 20 femmes en bonne
-santé agées entre 20 et 30 ans.]{style="color:blue"}
+[Nous avons sélectionné ce jeu de données et plus particulièrement ces variables car, intuitivement, elles nous paraissent avoir un lien entre elles. La variable `Fat` représente la masse graisseuse d'un invidu et la variable `Triceps` représente l'épaisseur du pli cutané du triceps. L'échantillon du jeu de données a été prélevé sur 20 femmes en bonne santé agées entre 20 et 30 ans.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 bodyfat <- read.csv('Jeux_Donnees/bodyfat.csv')
@@ -1096,8 +982,7 @@ bodyfat <- read.csv('Jeux_Donnees/bodyfat.csv')
 plot(bodyfat$Fat, bodyfat$Triceps)
 ```
 
-[Nous observons une tendance linéaire entre les variables `Fat` et
-`Triceps` qui témoigne d'une possible corrélation.]{style="color:blue"}
+[Nous observons une tendance linéaire entre les variables `Fat` et `Triceps` qui témoigne d'une possible corrélation.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 Real_Data <- read.csv('Jeux_Donnees/bodyfat.csv')
@@ -1105,10 +990,7 @@ Real_Data <- read.csv('Jeux_Donnees/bodyfat.csv')
 
 ## Estimation ponctuelle et par IC des paramètres
 
--   [(Q18)]{style="color:red"} Estimer les paramètres du modèle de
-    régression, tracer sur un graphique le nuage de points ainsi que la
-    droite des moindres carrés et discuter de la pertinence de votre
-    choix de modèle.
+-   [(Q18)]{style="color:red"} Estimer les paramètres du modèle de régression, tracer sur un graphique le nuage de points ainsi que la droite des moindres carrés et discuter de la pertinence de votre choix de modèle.
 
 ```{r, echo=TRUE, include=TRUE}
 x <- Real_Data$Fat
@@ -1124,12 +1006,10 @@ regression <- lm(y~x)
 abline(regression, col="red")
 ```
 
-[A l'aide du tracé ci-dessus, nous pouvons observer que la droite des
-moindres carrés suit la droite de régression.]{style="color:blue"}
+[A l'aide du tracé ci-dessus, nous pouvons observer que la droite des moindres carrés suit la droite de régression.]{style="color:blue"}
 
 -   [(Q19)]{style="color:red"} A l'aide de la fonction `confint`,
-    déterminer un estimation par intervalle de confiance des paramètres
-    de la droite de régression.
+    déterminer un estimation par intervalle de confiance des paramètres de la droite de régression.
 
 ```{r, echo=TRUE, include=TRUE}
 confint(regression, level=0.95) # avec un intervalle de confiance à 95%
@@ -1181,7 +1061,7 @@ explicative. C'est à dire que la variable `Triceps` explique la variable
 regression$coefficients[2]
 ```
 
-[$b = 0.8295705$ donc \$ b \neq 0\$. On rejette l'hypothèse $H_0$ et on
+[$b = 0.8295705$ donc $b \neq 0$. On rejette l'hypothèse $H_0$ et on
 en conclut que il existe une dépendance linéaire entre `Fat` et
 `Triceps`.]{style="color:blue"}
 
@@ -1279,9 +1159,8 @@ $Y_0 \in [22.4072, 34.5159]$]{style="color:blue"}
 -   [(Q26)]{style="color:red"} Votre conclusion en deux ou trois
     phrases.
 
-[De par ces observations et hypothèses, nous en concluons que le modèle
-de régression linéaire est adapté à nos données.]{style:"color:blue"}
+[De par ces observations et hypothèses, nous en concluons que le modèle de régression linéaire est adapté à nos données.]{style:"color:blue"}
 
 [Ainsi, nous avons déterminé que nous pouvons, à partir du pli du
-triceps d'un individu, prédire un encadrement de sa masse graisseuse à
-un niveau de confiance choisi.]{style:"color:blue"}
+triceps d'un individu, prédire un encadrement de sa masse graisseuse à un niveau de confiance choisi.]{style:"color:blue"}  
+  
