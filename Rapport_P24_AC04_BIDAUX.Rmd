@@ -815,20 +815,20 @@ summary(reg4)$sigma**2
 # Génération des graphiques de corrélation avec leur droite de régression
 par(mfrow = c(2,2))
 
-plot(anscombe$x1, anscombe$y1)
+plot(anscombe$x1, anscombe$y1, main = "Corrélation Anscombe1")
 abline(reg1)
 
-plot(anscombe$x2, anscombe$y2)
+plot(anscombe$x2, anscombe$y2, main = "Corrélation Anscombe2")
 abline(reg2)
 
-plot(anscombe$x3, anscombe$y3)
+plot(anscombe$x3, anscombe$y3, main = "Corrélation Anscombe3")
 abline(reg3)
 
-plot(anscombe$x4, anscombe$y4)
+plot(anscombe$x4, anscombe$y4, main = "Corrélation Anscombe4")
 abline(reg4)
 ```
 
-[Nous remarquons que les droites de régressions ont les mêmes équations $\hat y_i = \hat a_i + \hat b_ix \approx 3 + 0.5x$ avec $1 \leq i \leq 4$ et $i \in \mathbb{N}$. Il est intéressant de noter que les nuages de points sont très différents entre eux mais ont la même droite de régression.]{style="color:blue"}
+[Nous remarquons que les droites de régressions ont les mêmes équations $\hat y_i = \hat a_i + \hat b_ix \approx 3 + 0.5x$ avec $1 \leq i \leq 4$. Il est intéressant de noter que les nuages de points sont très différents entre eux mais ont la même droite de régression.]{style="color:blue"}
 
 -   [(Q16)]{style="color:red"} Pour estimer la qualité de l'ajustement, on utilise quelques diagnostics graphiques qui permettent de vérifier empiriquement la validité des hypothèses $(\mathcal{ H})$ (cf section 7.5 du poly de cours).
 
@@ -977,15 +977,28 @@ particulier les colonnes `Fat`et `Triceps`. Ayant quelques soucis lors de l'util
 
 [Nous avons sélectionné ce jeu de données et plus particulièrement ces variables car, intuitivement, elles nous paraissent avoir un lien entre elles. La variable `Fat` représente la masse graisseuse d'un invidu et la variable `Triceps` représente l'épaisseur du pli cutané du triceps. L'échantillon du jeu de données a été prélevé sur 20 femmes en bonne santé agées entre 20 et 30 ans.]{style="color:blue"}
 
+[Ci-dessous, nous avons représenté graphiquement trois paires de données : `Fat` expliquée par `Triceps`, `Fat` expliquée par `Thigh` et `Fat` expliquée par `Midarm`. ]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
 bodyfat <- read.csv('Jeux_Donnees/bodyfat.csv')
 ```
 
 ```{r, echo=TRUE, include=TRUE}
-plot(bodyfat$Fat, bodyfat$Triceps)
+par(mfrow = c(2,2))
+
+regTriceps<-lm(bodyfat$Fat~bodyfat$Triceps)
+regThigh<-lm(bodyfat$Fat~bodyfat$Thigh)
+regMidarm<-lm(bodyfat$Fat~bodyfat$Midarm)
+
+plot(bodyfat$Triceps, bodyfat$Fat, main = "Corrélation Triceps et Fat")
+abline(regTriceps)
+plot(bodyfat$Thigh, bodyfat$Fat, main = "Corrélation Thigh et Fat")
+abline(regThigh)
+plot(bodyfat$Midarm, bodyfat$Fat, main = "Corrélation Midarm et Fat")
+abline(regMidarm)
 ```
 
-[Nous observons une tendance linéaire entre les variables `Fat` et `Triceps` qui témoigne d'une possible corrélation.]{style="color:blue"}
+[Nous observons une tendance linéaire entre les variables `Fat` et `Triceps` qui témoigne d'une possible corrélation entre elles ainsi qu'entre `Fat` et `Thigh`. Cependant, nous n'observons pas de corrélation entre les variables `Fat` et `Midarm`. Notre choix se fait en faveur de `Triceps` car nous pensons qu'il est plus intéressant d'étudier la corrélation avec l'épaisseur du pli cutané du triceps plutôt qu'avec le tour de cuisse.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 Real_Data <- read.csv('Jeux_Donnees/bodyfat.csv')
@@ -995,10 +1008,12 @@ Real_Data <- read.csv('Jeux_Donnees/bodyfat.csv')
 
 -   [(Q18)]{style="color:red"} Estimer les paramètres du modèle de régression, tracer sur un graphique le nuage de points ainsi que la droite des moindres carrés et discuter de la pertinence de votre choix de modèle.
 
+[Dans la suite du projet, nous travaillons avec `Fat` la variable à expliquer et `Triceps` la variable explicative.]{style="color:blue"}
+
 ```{r, echo=TRUE, include=TRUE}
-x <- Real_Data$Fat
-y <- Real_Data$Triceps
-plot(x, y)
+x <- Real_Data$Triceps
+y <- Real_Data$Fat
+plot(x, y, main = "Corrélation Triceps et Fat")
 n <- length(x)
 xy <- data.frame(x, y)
 a_est <- a_estim(xy, n)
@@ -1009,7 +1024,7 @@ regression <- lm(y~x)
 abline(regression, col="red")
 ```
 
-[A l'aide du tracé ci-dessus, nous pouvons observer que la droite des moindres carrés suit la droite de régression.]{style="color:blue"}
+[À l'aide du tracé ci-dessus, nous pouvons observer que la droite des moindres carrés suit la droite de régression.]{style="color:blue"}
 
 -   [(Q19)]{style="color:red"} A l'aide de la fonction `confint`,
     déterminer un estimation par intervalle de confiance des paramètres de la droite de régression.
@@ -1019,8 +1034,8 @@ confint(regression, level=0.95) # avec un intervalle de confiance à 95%
 ```
 
 [Avec un niveau de confiance à 95%, on peut dire que
-$b \in [0.5677; 1.091]$ et que
-$a \in [3.1056; 13.9980]$]{style="color:blue"}
+$b \in [0.587; 1.128]$ et que
+$a \in [-8.470; 5.477]$]{style="color:blue"}
 
 ## Qualité de l'ajustement
 
@@ -1064,8 +1079,8 @@ explicative. C'est à dire que la variable `Triceps` explique la variable
 regression$coefficients[2]
 ```
 
-[$b = 0.8295705$ donc $b \neq 0$. On rejette l'hypothèse $H_0$ et on
-en conclut que il existe une dépendance linéaire entre `Fat` et
+[$b = 0.8571865$ donc $b \neq 0$. On rejette l'hypothèse $H_0$ et on
+en conclut qu'il existe une dépendance linéaire entre `Fat` et
 `Triceps`.]{style="color:blue"}
 
 *Indication* : On pourra utiliser la fonction pivotale pour $b$ (cf
@@ -1141,29 +1156,29 @@ x0.2 <- 24.0
 new_data <- data.frame(x = c(x0.1, x0.2))
 
 # Intervalle de confiance
-predict(regression,new_data,interval="confidence",level = 0.95)
+predict(regression, new_data, interval="confidence", level = 0.95)
 # Interval de prédiction
-predict(regression,new_data,interval="prediction",level = 0.95)
+predict(regression, new_data, interval="prediction", level = 0.95)
 ```
 
 [Ainsi, nous trouvons à un niveau de confiance de 95%
 :]{style="color:blue"}
 
 [- Pour $x_{0,1} = 16.8$ : un intervalle de confiance pour
-$\mathbb{E}(Y_0) \in [20.9111, 24.0661]$ et un intervalle de prédiction
-$Y_0 \in [16.4509, 28.5262]$]{style="color:blue"}
+$\mathbb{E}(Y_0) \in [10.2495, 15.5598]$ et un intervalle de prédiction
+$Y_0 \in [6.4127, 19.3965]$]{style="color:blue"}
 
 [- Pour $x_{0,2} = 24.0$ un intervalle de confiance
-$\mathbb{E}(Y_0) \in [26.8211, 30.1019]$ et un intervalle de prédiction
-$Y_0 \in [22.4072, 34.5159]$]{style="color:blue"}
+$\mathbb{E}(Y_0) \in [17.7055, 20.4473]$ et un intervalle de prédiction
+$Y_0 \in [12.9957, 25.1570]$]{style="color:blue"}
 
 ## Conclusion
 
 -   [(Q26)]{style="color:red"} Votre conclusion en deux ou trois
     phrases.
 
-[De par ces observations et hypothèses, nous en concluons que le modèle de régression linéaire est adapté à nos données.]{style:"color:blue"}
+[De par ces observations et hypothèses, nous en concluons que le modèle de régression linéaire est adapté à nos données.]{style="color:blue"}
 
 [Ainsi, nous avons déterminé que nous pouvons, à partir du pli du
-triceps d'un individu, prédire un encadrement de sa masse graisseuse à un niveau de confiance choisi.]{style:"color:blue"}  
+triceps d'un individu, prédire un encadrement de sa masse graisseuse à un niveau de confiance choisi.]{style="color:blue"}  
   
