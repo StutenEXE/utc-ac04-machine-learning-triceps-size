@@ -760,17 +760,17 @@ plot(anscombe$x4, anscombe$y4)
 
 -   [(Q15)]{style="color:red"} Effectuer les régressions linéaires sur les 4 ensembles de points. Discuter des résultats obtenus.
 
-[Nous appliquons la régression linéaire sur les 4 datasets.]{style="color:blue"}
+[Nous appliquons la régression linéaire sur les 4 jeux de données.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
-# Application de la régression linéaire sur les 4 datasets
+# Application de la régression linéaire sur les 4 jeux de données
 reg1<-lm(anscombe$y1~anscombe$x1)
 reg2<-lm(anscombe$y2~anscombe$x2)
 reg3<-lm(anscombe$y3~anscombe$x3)
 reg4<-lm(anscombe$y4~anscombe$x4)
 ```
 
-[Nous affichons les résumés statistiques des régressions linéaires sur les quatre datasets afin d'identifier les éléments statistiques qui nous intéressent.]{style="color:blue"}
+[Nous affichons les résumés statistiques des régressions linéaires sur les quatre jeux de données afin d'identifier les éléments statistiques qui nous intéressent.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 summary(reg1)
@@ -786,28 +786,28 @@ summary(reg4)
 reg1$coefficient
 summary(reg1)$sigma**2
 ```
-[Pour Anscombe1, $\hat b \approx 0.5$ , $\hat a \approx 3.0$ et $\hat \sigma^2 \approx 1.53$.]{style="color:blue"}
+[Pour Anscombe1, $\hat b_1 \approx 0.5$ , $\hat a_1 \approx 3.0$ et $\hat \sigma_1^2 \approx 1.53$.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 # Anscombe2
 reg2$coefficient
 summary(reg2)$sigma**2
 ```
-[Pour Anscombe2, $\hat b \approx 0.5$ , $\hat a \approx 3.0$ et $\hat \sigma^2 \approx 1.53$.]{style="color:blue"}
+[Pour Anscombe2, $\hat b_2 \approx 0.5$ , $\hat a_2 \approx 3.0$ et $\hat \sigma_2^2 \approx 1.53$.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 # Anscombe3
 reg3$coefficient
 summary(reg3)$sigma**2
 ```
-[Pour Anscombe3, $\hat b \approx 0.5$ , $\hat a \approx 3.0$ et $\hat \sigma^2 \approx 1.53$.]{style="color:blue"}
+[Pour Anscombe3, $\hat b_3 \approx 0.5$ , $\hat a_3 \approx 3.0$ et $\hat \sigma_3^2 \approx 1.53$.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 # Anscombe4
 reg4$coefficient
 summary(reg4)$sigma**2
 ```
-[Pour Anscombe4, $\hat b \approx 0.5$ , $\hat a \approx 3.0$ et $\hat \sigma^2 \approx 1.53$.]{style="color:blue"}
+[Pour Anscombe4, $\hat b_3 \approx 0.5$ , $\hat a_3 \approx 3.0$ et $\hat \sigma_3^2 \approx 1.53$.]{style="color:blue"}
 
 [Nous traçons les graphiques de corrélation et les enrichissons avec la droite de régression de chaque sous-jeu de données.]{style="color:blue"}
 
@@ -828,7 +828,7 @@ plot(anscombe$x4, anscombe$y4)
 abline(reg4)
 ```
 
-[Nous remarquons que les droites de régressions linéaires ont les mêmes équations $\hat y = \hat a + \hat bx \approx 3 + 0.5x$.]{style="color:blue"}
+[Nous remarquons que les droites de régressions ont les mêmes équations $\hat y_i = \hat a_i + \hat b_ix \approx 3 + 0.5x$ avec $1 \leq i \leq 4$ et $i \in \mathbb{N}$. Il est intéressant de noter que les nuages de points sont très différents entre eux mais ont la même droite de régression.]{style="color:blue"}
 
 -   [(Q16)]{style="color:red"} Pour estimer la qualité de l'ajustement, on utilise quelques diagnostics graphiques qui permettent de vérifier empiriquement la validité des hypothèses $(\mathcal{ H})$ (cf section 7.5 du poly de cours).
 
@@ -860,9 +860,9 @@ qqnorm(residuals4, main = "QQ Plot Anscombe4")
 qqline(residuals4)
 ```  
 
-[Ces diagrammes Quantile-Quantile nous permettent de comparer la distribution de nos données en comparaison à la distribution normale.]{style="color:blue"}
+[Ces diagrammes Quantile-Quantile nous permettent de comparer la distribution des données en comparaison à la distribution normale.]{style="color:blue"}
 
-[Nous observons que les données des 4 datasets suivent plus ou moins la distribution normale. Cependant, nous remarquons que l'une des observations dans Anscombes3 constitue une valeur aberrante et que les observations d'Anscombe1 sont parfois un peu plus éloignées de la distribution normale même si la tendance semble correcte.]{style="color:blue"}
+[Nous observons que les données des 4 jeux de données suivent plus ou moins la distribution normale. Cependant, nous remarquons que l'une des observations dans Anscombe3 constitue une valeur aberrante et que les observations d'Anscombe1 sont parfois un peu plus éloignées de la distribution normale même si la tendance semble correcte.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 # Génération des histogrammes des résidus corrigés et densité de la normale
@@ -881,11 +881,10 @@ curve(dnorm(x, mean=mean(residuals4), sd=sd(residuals4)), add=TRUE, col="blue")
 
 ```  
 
-[La méthode de visualisation par l'histogramme des résidus permet d'observer que les données d'Anscombe1 et Anscombe3 sont les plus susceptibles de valider l'hypothèse de normalité. Cependant, nous n'avons que très peu de données dans ce dataset, ce qui peut expliquer que la normalité ne soit pas flagrante sur ces diagrammes.]{style="color:blue"}
+[La méthode de visualisation par l'histogramme des résidus permet d'observer que les données d'Anscombe1 et Anscombe3 sont les plus susceptibles de valider l'hypothèse de normalité. Cependant, nous n'avons que très peu de données dans ce jeu de données, ce qui peut expliquer que la normalité ne soit pas flagrante sur ces diagrammes.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 # Tests de Shapiro-Wilk
-par(mfrow = c(2,2))
 shapiro.test(residuals1)
 shapiro.test(residuals2)
 shapiro.test(residuals3)
@@ -894,14 +893,18 @@ shapiro.test(residuals4)
 
 [Enfin, pour appuyer les précédentes observations faites sur la normalité, nous utilisons le test de Shapiro-Wilk. Les hypothèses de ce test sont les suivantes :]{style="color:blue"}
 
-[$H_0$ : la variable est normalement distribuée]{style="color:blue"}
+[$H_0$ : la variable est normalement distribuée]{style="color:blue"}  
+
 [$H_1$ : la variable n'est pas normalement distribuée]{style="color:blue"}
 
-[Plus la statistique $W$ se rapproche de 1, plus l'hypothèse de normalité est pertinente pour le jeu de données. Anscombe4 et Anscombe1 ont un $W > 0.94$ et Anscombe2 a un $W > 0.87$.]{style="color:blue"}
+[Plus la statistique $W$ se rapproche de 1, plus l'hypothèse de normalité est pertinente pour le jeu de données. Anscombe4 et Anscombe1 ont un $W > 0.94$ ce qui indique qu'ils se rapprochent fortement d'une loi normale et Anscombe2 a un $W \approx 0.87$ donc qui se rapproche (un peu moins) d'une loi normale.]{style="color:blue"}
 
-[Aussi, pour un seuil à $0.05$, la p-value nous amène à retenir Anscombe1, Anscombe2 et Anscombe4 normalement distribués car leur p-value est strictement supérieure au seuil $0.05$.]{style="color:blue"}
+[Aussi, pour un risque à $0.05$, la p-value nous amène à retenir Anscombe1, Anscombe2 et Anscombe4 normalement distribués car leur p-value est strictement supérieure au risque $0.05$.]{style="color:blue"}  
 
-    -   Pour l'homoscédasticité et éventuellement l'indépendance, les résidus standardisés (`rstandard`) en fonction des prédictions (`fitted.values`) ou bien en fonction des valeurs de la variable explicative.
+
+
+    -   Pour l'homoscédasticité et éventuellement l'indépendance, les résidus standardisés (`rstandard`) en fonction des prédictions (`fitted.values`) ou bien en fonction des valeurs de la variable explicative.  
+    
 
 ```{r, echo=TRUE, include=TRUE}
 # Calcul des résidus standardisés
@@ -928,9 +931,9 @@ plot(fitted.values(reg4), residuals_standardized4, main="Anscombe4", xlab="Valeu
 abline(h=0, col="red")
 ```  
 
-[Seulement Anscombe1 valide l'hypothèse d'homoscédasticité car nous n'observons pas de variation selon x dans la dispersion.]{style="color:blue"}
+[Seul Anscombe1 valide l'hypothèse d'homoscédasticité car nous n'observons pas de variation selon x dans la dispersion.]{style="color:blue"}
 
-[Au contraire, pour Anscombe2 les résidus standardisés en fonction de l'abscisse des données semble suivre une relation quadratique.]{style="color:blue"}
+[Au contraire, pour Anscombe2 les résidus standardisés en fonction de l'abscisse des données semblent suivre une relation quadratique.]{style="color:blue"}
 
 [Pour Anscombe3, nous n'observons pas de caractère aléatoire et cela semble suivre une fonction.]{style="color:blue"}
 

@@ -274,9 +274,16 @@ abline(h=0, col="red")
 #```
 
 #[Hypothèse de linéarité]{style="color:blue"}
+library(lmtest)
 
-#```{r, echo=TRUE, include=TRUE}
-#plot(reg4, which = 1)
-#plot(fitted(reg4), residuals4)
-#resettest(reg4)
-#```
+plot(reg4, which = 1)
+plot(fitted(reg4), residuals4)
+resettest(reg4)
+
+cov.test(anscombe$x1, anscombe$y1, method = 'pearson')
+cor.test(anscombe$x2, anscombe$y2, method = 'pearson')
+cor.test(anscombe$x3, anscombe$y3, method = 'pearson')
+cor.test(anscombe$x4, anscombe$y4, method = 'pearson')
+
+
+cor.test(anscombe$x1, anscombe$y1, method = 'spearman')
