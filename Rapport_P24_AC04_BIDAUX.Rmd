@@ -375,7 +375,7 @@ y <- generate_y(x, a0, b0, s0)
     
 ```{r,echo=TRUE,include=TRUE}
 # y en fonction de x (plot)
-plot(x, y, col = "blue")
+plot(x, y, col = "blue", main = "Représentation du nuage de points avec la droite de régression")
 # b0*x + a0 (courbe) 
 lines(x, a0 + x*b0, add=TRUE, col = "red")
 ```
@@ -411,7 +411,7 @@ sigma_estim <- function(xy, n) {
 }
 ```
 
-[A partir du formulaire donné en partie 1, nous avons pu créer les fonctions `a_estim`, `b_estim` et `sigma_estim` renvoyant l'estimation par les estimateurs dans biais des paramètres $a$, $b$ et $\sigma^2$ à partir d'une taille $n$ (`n`) et des couples $(x_i,y_i)_{1 \leq i \leq n}$ (`xy`).]{style="color:blue"}
+[À partir du formulaire donné en partie 1, nous avons pu créer les fonctions `a_estim`, `b_estim` et `sigma_estim` renvoyant l'estimation par les estimateurs sans biais des paramètres $a$, $b$ et $\sigma^2$ à partir d'une taille $n$ (`n`) et des couples $(x_i,y_i)_{1 \leq i \leq n}$ (`xy`).]{style="color:blue"}
 
 -   [(Q4)]{style="color:red"} A partir du jeu de données simulées aux
     questions (Q1a) et (Q1b), en déduire l'estimation de $a$, $b$ et
@@ -447,13 +447,13 @@ sigma_est
     distinguer ces deux droites).
 
 ```{r,echo=TRUE,include=TRUE}
-plot(x, y, col="black")
+plot(x, y, col="black", main = "Représentation du nuage de points\navec la droite de régression et la droite des moindres carrés")
 lines(x, a0 + x*b0, add=TRUE, col="red")
 y_ests <- a_est + b_est*x
 lines(x, y_ests, add=TRUE, col="blue")
 ```
 
-[Après avoir représenté le nuage de points $(x_i,y_i)_{1\leq i \leq n}$ en noir, la droite de régression $y=a_0 \; +\; b_0 \; x$ en rouge, et la droite des moindres carrés $y = \hat a + \hat b x$ en bleu, nous remarquons que les deux droites suivent la même tendance que le nuage de point et qu'elles se confondent.]{style="color:blue"}
+[Après avoir représenté le nuage de points $(x_i,y_i)_{1\leq i \leq n}$ en noir, la droite de régression $y=a_0 \; +\; b_0 \; x$ en rouge, et la droite des moindres carrés $y = \hat a + \hat b x$ en bleu, nous remarquons que les deux droites suivent la même tendance que le nuage de points et qu'elles sont très proches. On en déduit que $\hat a \approx a0$ et que $\hat b \approx b$.]{style="color:blue"}
 
 -   [(Q6)]{style="color:red"} Déterminer le vecteur des résidus
     ${\hat \epsilon}_i$ et vérifier la propriété des résidus.
@@ -464,7 +464,7 @@ e_ests <- y - y_ests
 sum(e_ests)
 ```
 
-[Nous commençons par calculer le vecteur des résidus $\hat \epsilon_i$ avec la formule donnée dans le formulaire. Nous stockons ce résultat dans la variable `e_ests`.]{style:"color:blue"}
+[Nous commençons par calculer le vecteur des résidus $\hat \epsilon_i$ avec la formule donnée dans le formulaire. Nous stockons ce résultat dans la variable `e_ests`.]{style="color:blue"}
 
 [D'après la propriété des résidus, la somme des éléments contenus dans $\hat \epsilon_i$ devrait valoir zéro. Nous calculons cette somme et remarquons que
 $\displaystyle{\sum_{i=1}^n {\hat \epsilon}_i \approx 0}$. La propriété des résidus est respectée.]{style="color:blue"}
@@ -473,11 +473,13 @@ $\displaystyle{\sum_{i=1}^n {\hat \epsilon}_i \approx 0}$. La propriété des r�
     appartient à la droite des moindres carrés.
 
 ```{r, echo=TRUE, include=TRUE}
-plot(mean(x), mean(y), col="red", pch=4)
+# Le titre du graphique n'accepte pas les expressions latex, nous écrivons xbar et ybar
+# à la place de l'écriture exacte
+plot(mean(x), mean(y), col="red", pch=4, main = "Représentation du point (xbar, ybar)\navec la droite des moindres carrés")
 lines(x, y_ests, col="black", add=TRUE)
 ```
 
-[Nous traçons la droite des moindres carrés en noir puis nous plaçons le point $(\bar x, \bar y)$ sous la forme d'une croix rouge. Visuellement, nous observons que le point $(\bar x, \bar y)$ appartient à la droite des moindres carrés.]{style:"color:blue"}
+[Nous traçons la droite des moindres carrés en noir puis nous plaçons le point $(\bar x, \bar y)$ sous la forme d'une croix rouge. Visuellement, nous observons que le point $(\bar x, \bar y)$ appartient à la droite des moindres carrés, c'est-à-dire que $\bar y = \hat a + \hat b \bar x$. Cela confirme que la propriété des résidus est bien respectée. ]{style="color:blue"}
 
 -   [(Q8)]{style="color:red"} En R, pour réaliser une régression
     linéaire on utilise la fonction `lm` (linear model) dont le premier
@@ -546,7 +548,7 @@ for (ni in n) {
 1000. Nous ne commençons pas i à 1, sinon on ne peut pas estimer les paramètres $a$ et $b$.]{style="color:blue"}
 
 ```{r,echo=TRUE,include=TRUE}
-plot(n, a_ests, col="black")
+plot(n, a_ests, col="black", main = "Représentation de 999 estimations de a\navec la droite de fonction f(x)=a0")
 lines(n, n*0 + a0, col="red", add=TRUE)
 ```
 
@@ -554,14 +556,14 @@ lines(n, n*0 + a0, col="red", add=TRUE)
 traçant la fonction $f(x)=a=a_0$ pour montrer la convergence en probabilité de $\hat a$ vers $a=a_0$ quand $n$ grandit.]{style="color:blue"}
 
 ```{r,echo=TRUE,include=TRUE}
-plot(n, b_ests, col="black")
+plot(n, b_ests, col="black", main = "Représentation de 999 estimations de b\navec la droite de fonction f(x)=b0")
 lines(n, n*0 + b0, col="red", add=TRUE)
 ```
 
 [Nous faisons de même mais pour ${\hat b}$ afin de montrer la convergence de
 $\hat b$ vers $b=b_0$ quand $n$ grandit.]{style="color:blue"}
 
-[Les graphiques montrent bien que
+[Visuellement, nous observons bien que
 ${\hat a {\underset{n \rightarrow +\infty }{\overset{\mathbb{P}}{\longrightarrow}}} a}$ et que
 ${\hat b {\underset{n \rightarrow +\infty }{\overset{\mathbb{P}}{\longrightarrow}}} b}$ avec $a=a_0$ et
 $b=b_0$.]{style="color:blue"}
@@ -606,8 +608,8 @@ n <- 200
 # Nous réalisons 150 réalisations de notre calcul pour n=200
 formules <- replicate(150, calcul_formule(n))
 # Nous traçons l'historgramme des 150 formules obtenues
-# et la densité d'une loi de Student a n-2 degrés de liberté
-hist(formules, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))))
+# et la densité d'une loi de Student à n-2 degrés de liberté
+hist(formules, prob = TRUE, ylim = c(0, max(dt(x, df=n-2))), main = "Représentation de l'histogramme des resultats obtenus\navec la densité d'une loi de Student à n-2 degrés de liberté")
 curve(dt(x, df=n-2), col="red", add=TRUE)
 ```
 
@@ -659,8 +661,8 @@ gen_IC_s <- function(xy, nv_confiance) {
 }
 ```
 
-[A partir des formules données dans le formulaire, nous créons les trois fonctions
-`gen_IC_a`, `gen_IC_b` et `gen_IC_sigma` qui renvoie chacune un intervalle de confiance pour $a$, $b$ et $\sigma^2$ à partir du vecteur d'observations $(x_i,y_i)_{1\leq i \leq n}$ (`xy`) et d'un niveau de confiance $1 - \alpha$ (`nv_confiance`).]{style="color:blue"}
+[À partir des formules données dans le formulaire, nous créons les trois fonctions
+`gen_IC_a`, `gen_IC_b` et `gen_IC_sigma` qui renvoient chacune un intervalle de confiance pour $a$, $b$ et $\sigma^2$ à partir du vecteur d'observations $(x_i,y_i)_{1\leq i \leq n}$ (`xy`) et d'un niveau de confiance $1 - \alpha$ (`nv_confiance`).]{style="color:blue"}
 
 -   [(Q12)]{style="color:red"} En utilisant la fonction "replicate",
     créer $100$ intervalles de confiance pour $a$, $b$ et $\sigma^2$.
@@ -673,7 +675,7 @@ b_IC_100 <- replicate(n, gen_IC_b(gen_couple_xy(100), 1-alpha))
 s_IC_100 <- replicate(n, gen_IC_s(gen_couple_xy(100), 1-alpha))
 ```
 
-[Nous avons décidé de prendre un niveau de confiance de 95% (d'où $\alpha = 0.05$). Nous devrions trouver qu'environ 95% des intervalles de confiance générés encadrent la variable estimée.]
+[Nous avons décidé de prendre un niveau de confiance de 95% (d'où $\alpha = 0.05$). Nous devrions trouver qu'environ 95% des intervalles de confiance générés encadrent la variable estimée.]{style="color:blue"}
 
 -   [(Q13)]{style="color:red"} Pour visualiser les intervalles de
     confiance, la fonction `plot_ICs` est disponible dans le fichier
@@ -683,7 +685,7 @@ s_IC_100 <- replicate(n, gen_IC_s(gen_couple_xy(100), 1-alpha))
 
 ```{r,echo=TRUE,include=TRUE}
 source("Utils.R")
-plot_ICs(a_IC_100, a0)
+plot_ICs(a_IC_100, a0, main = "Visualisation des intervalles de confiance de a")
 # Nous permet de visualiser la proportion d'intervalles de confiance justes
 hit <- a_IC_100[1, ] < a0 & a_IC_100[2, ] > a0
 sum(hit)/length(hit)
@@ -694,7 +696,7 @@ sum(hit)/length(hit)
 [Le rapport que nous avons décidé de calculer ensuite nous permet de confirmer que nous avons aux alentours de 95% d'intervalles de confiance corrects pour $a$.]{style="color:blue"}
 
 ```{r,echo=TRUE,include=TRUE}
-plot_ICs(b_IC_100, b0)
+plot_ICs(b_IC_100, b0, main = "Visualisation des intervalles de confiance de b")
 # Nous permet de visualiser la proportion d'intervalles de confiance justes
 hit <- b_IC_100[1, ] < b0 & b_IC_100[2, ] > b0
 sum(hit)/length(hit)
@@ -705,7 +707,7 @@ sum(hit)/length(hit)
 [Le rapport que nous avons décidé de calculer ensuite nous permet de confirmer que nous avons aux alentours de 95% d'intervalles de confiance corrects pour $b$.]{style="color:blue"}
 
 ```{r,echo=TRUE,include=TRUE}
-plot_ICs(s_IC_100, s0)
+plot_ICs(s_IC_100, s0, main = "Visualisation des intervalles de confiance de sigma")
 # Nous permet de visualiser la proportion d'intervalles de confiance justes
 hit <- s_IC_100[1, ] < s0 & s_IC_100[2, ] > s0
 sum(hit)/length(hit)
