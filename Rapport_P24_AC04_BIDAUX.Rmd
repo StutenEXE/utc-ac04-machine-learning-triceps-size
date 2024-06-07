@@ -1026,7 +1026,7 @@ regression <- lm(y~x)
 abline(regression, col="red")
 ```
 
-[À l'aide du tracé ci-dessus, nous pouvons observer que la droite des moindres carrés suit la droite de régression.]{style="color:blue"}
+[À l'aide du tracé ci-dessus, nous pouvons observer que la droite des moindres carrés (en vert) suit la droite de régression (en rouge). Elles se confondent tellement que nous n'arrivons pas à les différencier.]{style="color:blue"}
 
 -   [(Q19)]{style="color:red"} A l'aide de la fonction `confint`,
     déterminer un estimation par intervalle de confiance des paramètres de la droite de régression.
@@ -1102,8 +1102,8 @@ qqnorm(residuals)
 qqline(residuals)
 ```
 
-[La plupart des quantiles théoriques en fonction des quantiles observés
-appartiennent à la droite des quantiles--quantiles.]{style="color:blue"}
+[Les quantiles théoriques en fonction des quantiles observés
+suivent à peu près la droite des quantiles--quantiles. Il est possible que notre jeu de données puisse être estimé par une loi normale.]{style="color:blue"}
 
 -   [(Q24)]{style="color:red"} Evaluer visuellement l'indépendance des
     résidus corrigés et l'hypothèse d'homoscédasticité à l'aide du
@@ -1111,13 +1111,13 @@ appartiennent à la droite des quantiles--quantiles.]{style="color:blue"}
 
 ```{r, echo=TRUE, include=TRUE}
 residuals_standardized <- rstandard(regression)
-plot(fitted.values(regression), residuals_standardized, main="Homoscédasticité", xlab="Valeurs prédites", ylab="Résidus standardisés")
-abline(lm(residuals_standardized ~ fitted(regression)), col="red")
+plot(fitted.values(regression), residuals_standardized, main="Homoscédasticité", xlab="Variable explicative", ylab="Résidus standardisés")
+abline(h=0, col="red")
 ```
 
 [Nous observons une répartition aléatoire des points sur le graphique
 (ne semblent pas suivre une fonction particulière). Cela valide
-l'hypothèse d'homoscédasticité.]{style="color:blue"}
+l'hypothèse d'homoscédasticité et nous pouvons supposer l'indépendance des résidus corrigés.]{style="color:blue"}
 
 ## Prévision (cf Section 7.5.5, poly CM)
 
